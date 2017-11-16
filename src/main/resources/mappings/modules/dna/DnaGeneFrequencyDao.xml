@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaGeneFrequencyDao">
+    
+	<sql id="dnaGeneFrequencyColumns">
+		a.id AS "id",
+		a.loci_id AS "loci.id",
+		b.name AS "loci.name",
+		a.value AS "value",
+		a.probability AS "probability",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="dnaGeneFrequencyJoins">
+		left join DNA_GENE_LOCI b on a.loci_id = b.id
+	</sql>
+    
+	<select id="get" resultType="DnaGeneFrequency">
+		SELECT 
+			<include refid="dnaGeneFrequencyColumns"/>
+		FROM dna_gene_frequency a
+		<include refid="dnaGeneFrequencyJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DnaGeneFrequency">
+		SELECT 
+			<include refid="dnaGeneFrequencyColumns"/>
+		FROM dna_gene_frequency a
+		<include refid="dnaGeneFrequencyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY b.seq
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaGeneFrequency">
+		SELECT 
+			<include refid="dnaGeneFrequencyColumns"/>
+		FROM dna_gene_frequency a
+		<include refid="dnaGeneFrequencyJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_gene_frequency(
+			id,
+			loci_id,
+			value,
+			probability,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{loci.id},
+			#{value},
+			#{probability},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_gene_frequency SET 	
+			loci_id = #{loci.id},
+			value = #{value},
+			probability = #{probability},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dna_gene_frequency SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

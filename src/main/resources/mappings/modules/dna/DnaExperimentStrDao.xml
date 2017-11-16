@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaExperimentStrDao">
+    
+	<sql id="dnaExperimentStrColumns">
+		a.id AS "id",
+		a.experiment_id AS "experiment.id",
+		a.specimen_code AS "specimenCode",
+		a.gene_loci AS "geneLoci",
+		a.x AS "x",
+		a.y AS "y",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		i.ABSTRACTS AS "abstracts",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="dnaExperimentStrJoins">
+		left join specimen_material_register_item i on a.SPECIMEN_CODE = i.CODE
+	</sql>
+    
+    
+	<select id="get" resultType="DnaExperimentStr">
+		SELECT 
+			<include refid="dnaExperimentStrColumns"/>
+		FROM dna_experiment_str a
+		<include refid="dnaExperimentStrJoins"/>
+		WHERE a.id = #{id} 
+		
+	</select>
+	
+	
+	<select id="getById" resultType="DnaExperimentStr">
+	select * from 
+	dna_experiment_str a
+	WHERE a.specimen_code=#{specimenCode}
+	ORDER BY a.gene_loci
+	</select>
+	
+	
+	
+	
+	
+	<select id="getByExperimentIdAndCode" resultType="DnaExperimentStr">
+		SELECT 
+			<include refid="dnaExperimentStrColumns"/>
+		FROM dna_experiment_str a
+		<include refid="dnaExperimentStrJoins"/>
+		WHERE a.experiment_id = #{dnaExperimentId} and a.specimen_code=#{specimenCode}
+	</select>
+	<select id="getByRegisterId" resultType="DnaExperimentStr">
+		select 
+			a.id AS "id",
+			a.experiment_id AS "experiment.id",
+			a.specimen_code AS "specimenCode",
+			a.gene_loci AS "geneLoci",
+			a.x AS "x",
+			a.y AS "y",
+			a.create_by AS "createBy.id",
+			a.create_date AS "createDate",
+			a.update_by AS "updateBy.id",
+			a.update_date AS "updateDate",
+			a.remarks AS "remarks",
+			a.del_flag AS "delFlag"
+		from 
+		dna_experiment_str a
+			left join entrust_abstracts b 
+				on a.SPECIMEN_CODE = b.specimen_Code 
+				and a.EXPERIMENT_ID = b.DNA_EXPERIMENT_ID
+		where b.REGISTER_ID = #{registerId}
+		ORDER BY a.gene_loci
+	</select>
+	
+	<select id="getByExperimentIdAndAbstractsId" resultType="DnaExperimentStr">
+		SELECT 
+			<include refid="dnaExperimentStrColumns"/>
+		FROM dna_experiment_str a
+		<include refid="dnaExperimentStrJoins"/>
+		WHERE a.experiment_id = #{dnaExperimentId} and i.ABSTRACTS=#{abstractsId}
+	</select>
+	
+	
+	
+	<select id="findList" resultType="DnaExperimentStr">
+		SELECT 
+			<include refid="dnaExperimentStrColumns"/>
+		FROM dna_experiment_str a
+		<include refid="dnaExperimentStrJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaExperimentStr">
+		SELECT 
+			<include refid="dnaExperimentStrColumns"/>
+		FROM dna_experiment_str a
+		<include refid="dnaExperimentStrJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_experiment_str(
+			id,
+			experiment_id,
+			specimen_code,
+			gene_loci,
+			x,
+			y,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{experiment.id},
+			#{specimenCode},
+			#{geneLoci},
+			#{x},
+			#{y},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_experiment_str SET 	
+			experiment_id = #{experiment.id},
+			specimen_code = #{specimenCode},
+			gene_loci = #{geneLoci},
+			x = #{x},
+			y = #{y},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	
+	<update id="delete">
+		UPDATE dna_experiment_str SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="delect">
+		DELETE FROM dna_experiment_str
+	</delete>
+	
+</mapper>

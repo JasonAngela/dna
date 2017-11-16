@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.sys.dao.SysCodeRuleItemDao">
+    
+	<sql id="sysCodeRuleItemColumns">
+		a.id AS "id",
+		a.rule_id AS "rule.id",
+		a.seq AS "seq",
+		a.code_type AS "codeType",
+		a.pattern AS "pattern",
+		a.digital_length AS "digitalLength",
+		a.create_by AS "createBy.id",
+		a.sequence_id AS "sequence.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="sysCodeRuleItemJoins">
+		LEFT JOIN sys_code_rule b ON b.id = a.rule_id
+	</sql>
+    
+	<select id="get" resultType="SysCodeRuleItem">
+		SELECT 
+			<include refid="sysCodeRuleItemColumns"/>
+		FROM sys_code_rule_item a
+		<include refid="sysCodeRuleItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SysCodeRuleItem">
+		SELECT 
+			<include refid="sysCodeRuleItemColumns"/>
+		FROM sys_code_rule_item a
+		<include refid="sysCodeRuleItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="rule != null and rule.id != null and rule.id != ''">
+				AND a.rule_id = #{rule.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.seq
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SysCodeRuleItem">
+		SELECT 
+			<include refid="sysCodeRuleItemColumns"/>
+		FROM sys_code_rule_item a
+		<include refid="sysCodeRuleItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO sys_code_rule_item(
+			id,
+			rule_id,
+			seq,
+			code_type,
+			pattern,
+			digital_length,
+			create_by,
+			sequence_id,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{rule.id},
+			#{seq},
+			#{codeType},
+			#{pattern},
+			#{digitalLength},
+			#{createBy.id},
+			#{sequence.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE sys_code_rule_item SET 	
+			rule_id = #{rule.id},
+			seq = #{seq},
+			code_type = #{codeType},
+			pattern = #{pattern},
+			digital_length = #{digitalLength},
+			sequence_id = #{sequence.id},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE sys_code_rule_item SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE rule_id = #{rule.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

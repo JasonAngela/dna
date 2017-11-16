@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.material.dao.SpecimenMaterialRegisterItemDao">
+    
+	<sql id="specimenMaterialRegisterItemColumns">
+		a.id AS "id",
+		a.material_register_id AS "materialRegister.id",
+		a.abstracts AS "abstracts",
+		a.code AS "code",
+		a.client_code AS "clientCode",
+		a.material_type AS "materialType",
+		a.qty AS "qty",
+		a.measure AS "measure",
+		a.pic AS "pic",
+		a.in_qty AS "inQty",
+		a.out_qty AS "outQty",
+		a.left_qty AS "leftQty"
+	</sql>
+	
+	<sql id="specimenMaterialRegisterItemJoins">
+		LEFT JOIN specimen_material_register b ON b.id = a.material_register_id
+	</sql>
+	
+	<select id="findall" resultType="SpecimenMaterialRegisterItem" >
+	select * from
+	  specimen_material_register_item a
+	  WHERE a.material_register_id = #{id}
+	
+	</select>
+	
+	
+	<select id="getNotExperiment" resultType="SpecimenMaterialRegisterItem" >
+		select <include refid="specimenMaterialRegisterItemColumns"/>
+		from specimen_material_register_item a
+		left join DNA_EXPERIMENT_SPECIMEN b on a.CODE = b.SPECIMEN_CODE
+		where b.ID is null
+	</select>
+	
+	
+	
+	<select id="findac" resultType="SpecimenMaterialRegisterItem">
+	select * from
+	specimen_material_register_item a
+	  WHERE a.abstracts= #{id}
+	</select>
+    
+	<select id="get" resultType="SpecimenMaterialRegisterItem">
+		SELECT 
+			<include refid="specimenMaterialRegisterItemColumns"/>
+		FROM specimen_material_register_item a
+		<include refid="specimenMaterialRegisterItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="selectByCode" resultType="SpecimenMaterialRegisterItem">
+		SELECT 
+			<include refid="specimenMaterialRegisterItemColumns"/>
+		FROM specimen_material_register_item a
+		<include refid="specimenMaterialRegisterItemJoins"/>
+		WHERE a.code = #{specimenCode}
+	</select>
+	
+	<select id="listByParentId" resultType="SpecimenMaterialRegisterItem">
+		SELECT 
+			<include refid="specimenMaterialRegisterItemColumns"/>
+		FROM specimen_material_register_item a
+		<include refid="specimenMaterialRegisterItemJoins"/>
+		WHERE a.material_register_id = #{registerId}
+	</select>
+	
+	
+	<select id="findList" resultType="SpecimenMaterialRegisterItem">
+		SELECT 
+			<include refid="specimenMaterialRegisterItemColumns"/>
+		FROM specimen_material_register_item a
+		<include refid="specimenMaterialRegisterItemJoins"/>
+		<where>
+			
+			<if test="materialRegister != null and materialRegister.id != null and materialRegister.id != ''">
+				AND a.material_register_id = #{materialRegister.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SpecimenMaterialRegisterItem">
+		SELECT 
+			<include refid="specimenMaterialRegisterItemColumns"/>
+		FROM specimen_material_register_item a
+		<include refid="specimenMaterialRegisterItemJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO specimen_material_register_item(
+			id,
+			material_register_id,
+			abstracts,
+			code,
+			client_code,
+			material_type,
+			qty,
+			measure,
+			pic,
+			in_qty,
+			out_qty,
+			left_qty
+		) VALUES (
+			#{id},
+			#{materialRegister.id},
+			#{abstracts},
+			#{code},
+			#{clientCode},
+			#{materialType},
+			#{qty},
+			#{measure},
+			#{pic},
+			#{inQty},
+			#{outQty},
+			#{leftQty}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE specimen_material_register_item SET 	
+			code = #{code},
+			material_type = #{materialType},
+			qty = #{qty},
+			measure = #{measure},
+			pic = #{pic}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM specimen_material_register_item
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE material_register_id = #{materialRegister.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

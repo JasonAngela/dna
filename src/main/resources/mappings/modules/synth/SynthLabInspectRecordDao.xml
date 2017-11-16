@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.synth.dao.SynthLabInspectRecordDao">
+    
+	<sql id="synthLabInspectRecordColumns">
+		a.id AS "id",
+		a.lab_id AS "lab.id",
+		b.name AS "lab.name",
+		a.temperature AS "temperature",
+		a.wetness AS "wetness",
+		a.inspect_time AS "inspectTime",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	<sql id="synthLabInspectRecordJoins">
+		LEFT JOIN synth_lab b ON a.LAB_ID =b.ID
+	</sql>
+    
+	<select id="get" resultType="SynthLabInspectRecord">
+		SELECT 
+			<include refid="synthLabInspectRecordColumns"/>
+		FROM synth_lab_inspect_record a
+		<include refid="synthLabInspectRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SynthLabInspectRecord">
+		SELECT 
+			<include refid="synthLabInspectRecordColumns"/>
+		FROM synth_lab_inspect_record a
+		<include refid="synthLabInspectRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SynthLabInspectRecord">
+		SELECT 
+			<include refid="synthLabInspectRecordColumns"/>
+		FROM synth_lab_inspect_record a
+		<include refid="synthLabInspectRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO synth_lab_inspect_record(
+			id,
+			lab_id,
+			temperature,
+			wetness,
+			inspect_time,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{lab.id},
+			#{temperature},
+			#{wetness},
+			#{inspectTime},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE synth_lab_inspect_record SET 	
+			lab_id = #{lab.id},
+			temperature = #{temperature},
+			wetness = #{wetness},
+			inspect_time = #{inspectTime},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE synth_lab_inspect_record SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

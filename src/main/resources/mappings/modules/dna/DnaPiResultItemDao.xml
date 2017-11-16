@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaPiResultItemDao">
+    
+	<sql id="dnaPiResultItemColumns">
+		a.id AS "id",
+		a.gene_loci AS "geneLoci",
+		a.p_value AS "pValue",
+		a.q_value AS "qValue",
+		a.p_prob AS "pProb",
+		a.q_prob AS "qProb",
+		a.pi AS "pi",
+		a.formula as "formula",
+		a.min as "min",
+		a.result_id AS "result.id"
+	</sql>
+	
+	<sql id="dnaPiResultItemJoins">
+		LEFT JOIN dna_pi_result b ON b.id = a.result_id
+	</sql>
+    
+	<select id="get" resultType="DnaPiResultItem">
+		SELECT 
+			<include refid="dnaPiResultItemColumns"/>
+		FROM dna_pi_result_item a
+		<include refid="dnaPiResultItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DnaPiResultItem">
+		SELECT 
+			<include refid="dnaPiResultItemColumns"/>
+		FROM dna_pi_result_item a
+		<include refid="dnaPiResultItemJoins"/>
+		<where>
+			
+			<if test="result != null ">
+				AND a.result_id = #{result.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.gene_loci
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaPiResultItem">
+		SELECT 
+			<include refid="dnaPiResultItemColumns"/>
+		FROM dna_pi_result_item a
+		<include refid="dnaPiResultItemJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_pi_result_item(
+			id,
+			gene_loci,
+			p_value,
+			q_value,
+			p_prob,
+			q_prob,
+			pi,
+			formula,
+			min,
+			result_id
+		) VALUES (
+			#{id},
+			#{geneLoci},
+			#{pValue},
+			#{qValue},
+			#{pProb},
+			#{qProb},
+			#{pi},
+			#{formula},
+			#{min},
+			#{result.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_pi_result_item SET 	
+			gene_loci = #{geneLoci},
+			p_value = #{pValue},
+			q_value = #{qValue},
+			p_prob = #{pProb},
+			q_prob = #{qProb},
+			pi = #{pi},
+			formula =#{formula},
+			min =#{min},
+			result_id = #{result.id}
+		WHERE id = #{id}
+	</update>
+	
+
+	
+	<delete id="delete">
+	 delete from dna_pi_result_item
+	</delete>
+	
+	<select id="findAll" resultType="DnaPiResultItem">
+	select * from 
+	 dna_pi_result_item a
+	 ORDER BY a.gene_loci
+	</select>
+	
+</mapper>

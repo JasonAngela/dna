@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.clinic.dao.ClinicRegisterDao">
+    
+	<sql id="clinicRegisterColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.client_name AS "clientName",
+		a.client_tel AS "clientTel",
+		a.client_receiver AS "clientReceiver",
+		a.client_email AS "clientEmail",
+		a.client_fax AS "clientFax",
+		a.client_zipcode AS "clientZipcode",
+		a.client_area AS "clientArea",
+		a.client_address AS "clientAddress",
+		a.agent_name AS "agentName",
+		a.agent_tel AS "agentTel",
+		a.server_name AS "serverName",
+		a.server_org_id AS "serverOrgId",
+		a.send_mode AS "sendMode",
+		a.specialty AS "specialty",
+		a.type AS "type",
+		a.material AS "material",
+		a.material_dispose AS "materialDispose",
+		a.time_limit_result AS "timeLimitResult",
+		a.time_limit_report AS "timeLimitReport",
+		a.standard_fee AS "standardFee",
+		a.special_fee AS "specialFee",
+		a.total_fee AS "totalFee",
+		a.appraisal_item AS "appraisalItem",
+		a.client_avoid AS "clientAvoid",
+		a.authorize_notification AS "authorizeNotification",
+		a.status AS "status",
+		a.proc_ins_id AS "processInstanceId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="clinicRegisterJoins">
+	</sql>
+    
+	<select id="get" resultType="ClinicRegister">
+		SELECT 
+			<include refid="clinicRegisterColumns"/>
+		FROM clinic_register a
+		<include refid="clinicRegisterJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="ClinicRegister">
+		SELECT 
+			<include refid="clinicRegisterColumns"/>
+		FROM clinic_register a
+		<include refid="clinicRegisterJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="ClinicRegister">
+		SELECT 
+			<include refid="clinicRegisterColumns"/>
+		FROM clinic_register a
+		<include refid="clinicRegisterJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO clinic_register(
+			id,
+			code,
+			client_name,
+			client_tel,
+			client_receiver,
+			client_email,
+			client_fax,
+			client_zipcode,
+			client_area,
+			client_address,
+			agent_name,
+			agent_tel,
+			server_name,
+			server_org_id,
+			send_mode,
+			specialty,
+			type,
+			material,
+			material_dispose,
+			time_limit_result,
+			time_limit_report,
+			standard_fee,
+			special_fee,
+			total_fee,
+			appraisal_item,
+			client_avoid,
+			authorize_notification,
+			status,
+			proc_ins_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{code},
+			#{clientName},
+			#{clientTel},
+			#{clientReceiver},
+			#{clientEmail},
+			#{clientFax},
+			#{clientZipcode},
+			#{clientArea},
+			#{clientAddress},
+			#{agentName},
+			#{agentTel},
+			#{serverName},
+			#{serverOrgId},
+			#{sendMode},
+			#{specialty},
+			#{type},
+			#{material},
+			#{materialDispose},
+			#{timeLimitResult},
+			#{timeLimitReport},
+			#{standardFee},
+			#{specialFee},
+			#{totalFee},
+			#{appraisalItem},
+			#{clientAvoid},
+			#{authorizeNotification},
+			#{status},
+			#{processInstanceId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE clinic_register SET 	
+			code = #{code},
+			client_name = #{clientName},
+			client_tel = #{clientTel},
+			client_receiver = #{clientReceiver},
+			client_email = #{clientEmail},
+			client_fax = #{clientFax},
+			client_zipcode = #{clientZipcode},
+			client_area = #{clientArea},
+			client_address = #{clientAddress},
+			agent_name = #{agentName},
+			agent_tel = #{agentTel},
+			server_name = #{serverName},
+			server_org_id = #{serverOrgId},
+			send_mode = #{sendMode},
+			specialty = #{specialty},
+			type = #{type},
+			material = #{material},
+			material_dispose = #{materialDispose},
+			time_limit_result = #{timeLimitResult},
+			time_limit_report = #{timeLimitReport},
+			standard_fee = #{standardFee},
+			special_fee = #{specialFee},
+			total_fee = #{totalFee},
+			appraisal_item = #{appraisalItem},
+			client_avoid = #{clientAvoid},
+			authorize_notification = #{authorizeNotification},
+			status = #{status},
+			proc_ins_id = #{processInstanceId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE clinic_register SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

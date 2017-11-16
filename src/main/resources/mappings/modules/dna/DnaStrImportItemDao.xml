@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaStrImportItemDao">
+    
+	<sql id="dnaStrImportItemColumns">
+		a.id AS "id",
+		a.import_id AS "strImport.id",
+		a.gene_loci AS "geneLoci",
+		a.material_code AS "materialCode",
+		a.value AS "value"
+	</sql>
+	
+	<sql id="dnaStrImportItemJoins">
+		LEFT JOIN dna_str_import b ON b.id = a.import_id
+	</sql>
+    
+	<select id="get" resultType="DnaStrImportItem">
+		SELECT 
+			<include refid="dnaStrImportItemColumns"/>
+		FROM dna_str_import_item a
+		<include refid="dnaStrImportItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DnaStrImportItem">
+		SELECT 
+			<include refid="dnaStrImportItemColumns"/>
+		FROM dna_str_import_item a
+		<include refid="dnaStrImportItemJoins"/>
+		<where>
+			
+			<if test="strImport != null and strImport.id != null and strImport.id != ''">
+				AND a.import_id = #{strImport.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaStrImportItem">
+		SELECT 
+			<include refid="dnaStrImportItemColumns"/>
+		FROM dna_str_import_item a
+		<include refid="dnaStrImportItemJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_str_import_item(
+			id,
+			import_id,
+			gene_loci,
+			material_code,
+			value
+		) VALUES (
+			#{id},
+			#{strImport.id},
+			#{geneLoci},
+			#{materialCode},
+			#{value}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_str_import_item SET 	
+			import_id = #{strImport.id},
+			gene_loci = #{geneLoci},
+			material_code = #{materialCode},
+			value = #{value}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM dna_str_import_item
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE import_id = #{strImport.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

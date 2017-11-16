@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="appraisal" name="司法鉴定" isExecutable="true">
+    <startEvent id="register" name="委托登记" activiti:initiator="apply" activiti:formKey="/entrust/entrustRegister/form"></startEvent>
+    <sequenceFlow id="flow1" sourceRef="register" targetRef="materialRegister"></sequenceFlow>
+    <userTask id="materialRegister" name="物证登记" activiti:assignee="${apply}" activiti:formKey="/material/specimenMaterialRegister/form"></userTask>
+    <serviceTask id="autoMaterialIn" name="生成入库单" activiti:delegateExpression="${autoMakeMaterialInDelegate}"></serviceTask>
+    <sequenceFlow id="flow5" sourceRef="materialRegister" targetRef="autoMaterialIn"></sequenceFlow>
+    <userTask id="reportInit" name="鉴定报告初稿" activiti:assignee="${apply}" activiti:formKey="/entrust/entrustExpertOpinion/form"></userTask>
+    <userTask id="SecondPersonCheck" name="第二鉴定人复检" activiti:assignee="${apply}" activiti:formKey="/entrust/entrustExpertOpinion/form"></userTask>
+    <sequenceFlow id="flow9" sourceRef="reportInit" targetRef="SecondPersonCheck"></sequenceFlow>
+    <userTask id="managerCheck" name="授权签字人确认" activiti:assignee="${apply}" activiti:formKey="/entrust/entrustExpertOpinion/form"></userTask>
+    <exclusiveGateway id="checkFlag" name="是否通过"></exclusiveGateway>
+    <userTask id="requestEnd" name="成文修改" activiti:assignee="${apply}" activiti:formKey="/entrust/entrustExpertOpinion/form"></userTask>
+    <serviceTask id="autoFile" name="自动归档" activiti:expression="${autoFileDelegate}"></serviceTask>
+    <sequenceFlow id="flow13" sourceRef="requestEnd" targetRef="autoFile"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow14" sourceRef="autoFile" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow11" sourceRef="managerCheck" targetRef="checkFlag"></sequenceFlow>
+    <sequenceFlow id="flow10" sourceRef="SecondPersonCheck" targetRef="managerCheck"></sequenceFlow>
+    <sequenceFlow id="flow15" name="通过" sourceRef="checkFlag" targetRef="reportInit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${flag == 0}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow12" sourceRef="checkFlag" targetRef="requestEnd">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${flag == 1}]]></conditionExpression>
+    </sequenceFlow>
+    <receiveTask id="waitImport" name="等待导入结果"></receiveTask>
+    <sequenceFlow id="sid-32339CEB-952B-4E6A-B4EF-98B2884926A3" sourceRef="autoMaterialIn" targetRef="waitImport"></sequenceFlow>
+    <sequenceFlow id="sid-AE1D32D9-63F3-40F2-BF83-6956559CFE3F" sourceRef="waitImport" targetRef="reportInit"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_appraisal">
+    <bpmndi:BPMNPlane bpmnElement="appraisal" id="BPMNPlane_appraisal">
+      <bpmndi:BPMNShape bpmnElement="register" id="BPMNShape_register">
+        <omgdc:Bounds height="30.0" width="30.0" x="150.0" y="82.5"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="materialRegister" id="BPMNShape_materialRegister">
+        <omgdc:Bounds height="55.0" width="105.0" x="321.0" y="70.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="autoMaterialIn" id="BPMNShape_autoMaterialIn">
+        <omgdc:Bounds height="55.0" width="105.0" x="539.0" y="70.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="reportInit" id="BPMNShape_reportInit">
+        <omgdc:Bounds height="55.0" width="105.0" x="540.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="SecondPersonCheck" id="BPMNShape_SecondPersonCheck">
+        <omgdc:Bounds height="55.0" width="105.0" x="315.0" y="200.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="managerCheck" id="BPMNShape_managerCheck">
+        <omgdc:Bounds height="55.0" width="105.0" x="315.0" y="318.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="checkFlag" id="BPMNShape_checkFlag">
+        <omgdc:Bounds height="40.0" width="40.0" x="353.0" y="399.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="requestEnd" id="BPMNShape_requestEnd">
+        <omgdc:Bounds height="55.0" width="105.0" x="319.0" y="471.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="autoFile" id="BPMNShape_autoFile">
+        <omgdc:Bounds height="55.0" width="105.0" x="321.0" y="563.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="28.0" width="28.0" x="354.0" y="640.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="waitImport" id="BPMNShape_waitImport">
+        <omgdc:Bounds height="80.0" width="100.0" x="705.0" y="120.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="180.0" y="97.5"></omgdi:waypoint>
+        <omgdi:waypoint x="321.0" y="97.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="372.0978260869565" y="526.0"></omgdi:waypoint>
+        <omgdi:waypoint x="372.9021739130435" y="563.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="371.1181102362205" y="618.0"></omgdi:waypoint>
+        <omgdi:waypoint x="369.20807539245124" y="640.0522204689723"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="393.0" y="419.0"></omgdi:waypoint>
+        <omgdi:waypoint x="592.5" y="419.0"></omgdi:waypoint>
+        <omgdi:waypoint x="592.5" y="255.0"></omgdi:waypoint>
+        <bpmndi:BPMNLabel>
+          <omgdc:Bounds height="0.0" width="0.0" x="393.0" y="419.0"></omgdc:Bounds>
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="426.0" y="97.5"></omgdi:waypoint>
+        <omgdi:waypoint x="539.0" y="97.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="367.5" y="255.0"></omgdi:waypoint>
+        <omgdi:waypoint x="367.5" y="318.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="369.5578231292517" y="373.0"></omgdi:waypoint>
+        <omgdi:waypoint x="371.60759493670884" y="400.39240506329116"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-AE1D32D9-63F3-40F2-BF83-6956559CFE3F" id="BPMNEdge_sid-AE1D32D9-63F3-40F2-BF83-6956559CFE3F">
+        <omgdi:waypoint x="705.0" y="180.76923076923077"></omgdi:waypoint>
+        <omgdi:waypoint x="645.0" y="205.69230769230768"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="540.0" y="227.5"></omgdi:waypoint>
+        <omgdi:waypoint x="420.0" y="227.5"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="372.6296296296296" y="438.6296296296296"></omgdi:waypoint>
+        <omgdi:waypoint x="372.0188679245283" y="471.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-32339CEB-952B-4E6A-B4EF-98B2884926A3" id="BPMNEdge_sid-32339CEB-952B-4E6A-B4EF-98B2884926A3">
+        <omgdi:waypoint x="644.0" y="117.56880733944953"></omgdi:waypoint>
+        <omgdi:waypoint x="705.0" y="140.8868501529052"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

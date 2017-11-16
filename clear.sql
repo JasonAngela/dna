@@ -1,0 +1,14 @@
+delete from  `jeesite`.`specimen_material_in_item`;
+delete from `jeesite`.`specimen_material_in`;
+delete from `jeesite`.`specimen_material_out_item`;
+delete from `jeesite`.`specimen_material_out`;
+delete from `jeesite`.`specimen_material_register_item`;
+delete from `jeesite`.`specimen_material_register`;
+delete from ENTRUST_EXPERT_OPINION;
+delete from entrust_abstracts;
+delete from entrust_register;
+delete from DNA_EXPERIMENT_IMPORT;
+delete from DNA_EXPERIMENT_SPECIMEN;
+delete from DNA_EXPERIMENT_STR;
+delete from DNA_PI_RESULT_ITEM;
+delete from DNA_PI_RESULT;

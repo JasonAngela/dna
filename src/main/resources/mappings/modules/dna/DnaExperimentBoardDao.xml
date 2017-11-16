@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaExperimentBoardDao">
+    
+	<sql id="dnaExperimentBoardColumns">
+		a.id AS "id",
+		a.board_code AS "boardCode",
+		a.experiment_id AS "experiment.id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="dnaExperimentBoardJoins">
+	</sql>
+    
+	<select id="get" resultType="DnaExperimentBoard">
+		SELECT 
+			<include refid="dnaExperimentBoardColumns"/>
+		FROM dna_experiment_board a
+		<include refid="dnaExperimentBoardJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findByParentId" resultType="DnaExperimentBoard">
+		SELECT 
+			<include refid="dnaExperimentBoardColumns"/>
+		FROM dna_experiment_board a
+		<include refid="dnaExperimentBoardJoins"/>
+		WHERE a.experiment_id = #{parentId}
+	</select>
+	
+	
+	<select id="findList" resultType="DnaExperimentBoard">
+		SELECT 
+			<include refid="dnaExperimentBoardColumns"/>
+		FROM dna_experiment_board a
+		<include refid="dnaExperimentBoardJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaExperimentBoard">
+		SELECT 
+			<include refid="dnaExperimentBoardColumns"/>
+		FROM dna_experiment_board a
+		<include refid="dnaExperimentBoardJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_experiment_board(
+			id,
+			board_code,
+			experiment_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{boardCode},
+			#{experiment.id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_experiment_board SET 	
+			board_code = #{boardCode},
+			experiment_id = #{experiment.id},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dna_experiment_board SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

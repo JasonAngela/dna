@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaGeneCassetteItemDao">
+    
+	<sql id="dnaGeneCassetteItemColumns">
+		a.id AS "id",
+		a.cassette_id AS "cassette.id",
+		a.loci_id AS "loci.id",
+		a.seq as "seq"
+	</sql>
+	
+	<sql id="dnaGeneCassetteItemJoins">
+		LEFT JOIN dna_gene_cassette b ON b.id = a.cassette_id
+	</sql>
+    
+	<select id="get" resultType="DnaGeneCassetteItem">
+		SELECT 
+			<include refid="dnaGeneCassetteItemColumns"/>
+		FROM dna_gene_cassette_item a
+		<include refid="dnaGeneCassetteItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DnaGeneCassetteItem">
+		SELECT 
+			<include refid="dnaGeneCassetteItemColumns"/>
+		FROM dna_gene_cassette_item a
+		<include refid="dnaGeneCassetteItemJoins"/>
+		<where>
+			
+			<if test="cassette != null and cassette.id != null and cassette.id != ''">
+				AND a.cassette_id = #{cassette.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaGeneCassetteItem">
+		SELECT 
+			<include refid="dnaGeneCassetteItemColumns"/>
+		FROM dna_gene_cassette_item a
+		<include refid="dnaGeneCassetteItemJoins"/>
+		<where>
+			
+		</where>		
+		order by seq
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_gene_cassette_item(
+			id,
+			cassette_id,
+			loci_id,
+			seq
+		) VALUES (
+			#{id},
+			#{cassette.id},
+			#{loci.id},
+			#{loci.seq}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_gene_cassette_item SET 	
+			cassette_id = #{cassette.id},
+			loci_id = #{loci.id},
+			seq = #{loci.seq}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM dna_gene_cassette_item
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE cassette_id = #{cassette.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

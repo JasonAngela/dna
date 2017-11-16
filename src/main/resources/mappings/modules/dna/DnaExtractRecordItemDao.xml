@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaExtractRecordItemDao">
+    
+	<sql id="dnaExtractRecordItemColumns">
+		a.id AS "id",
+		a.record_id AS "record.id",
+		a.extract_rounds AS "extractRounds",
+		a.sample_number AS "sampleNumber",
+		a.check_types AS "checkTypes",
+		a.based_amount AS "basedAmount",
+		a.based_amount_other AS "basedAmountOther",
+		a.extract_way AS "extractWay",
+		a.extract_wayother AS "extractWayother",
+		a.reagent_batches AS "reagentBatches",
+		a.extraction_method AS "extractionMethod",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="dnaExtractRecordItemJoins">
+		
+		LEFT JOIN dna_extract_record b ON b.id = a.record_id
+	</sql>
+	
+	
+	<select id="findDnaExtractRecordItem" resultType="DnaExtractRecordItem">
+	SELECT <include refid="dnaExtractRecordItemColumns"/> FROM dna_extract_record_item a WHERE a.sample_number=#{sample_number}
+	</select>
+	
+	
+	
+    
+	<select id="get" resultType="DnaExtractRecordItem">
+		SELECT 
+			<include refid="dnaExtractRecordItemColumns"/>
+		FROM dna_extract_record_item a
+		<include refid="dnaExtractRecordItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DnaExtractRecordItem">
+		SELECT 
+			<include refid="dnaExtractRecordItemColumns"/>
+		FROM dna_extract_record_item a
+		<include refid="dnaExtractRecordItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="record != null and record.id != null and record.id != ''">
+				AND a.record_id = #{record.id}
+			</if>
+			<if test="sampleNumber != null and sampleNumber != ''">
+				AND a.sample_number = #{sampleNumber}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaExtractRecordItem">
+		SELECT 
+			<include refid="dnaExtractRecordItemColumns"/>
+		FROM dna_extract_record_item a
+		<include refid="dnaExtractRecordItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_extract_record_item(
+			id,
+			record_id,
+			extract_rounds,
+			sample_number,
+			check_types,
+			based_amount,
+			based_amount_other,
+			extract_way,
+			extract_wayother,
+			reagent_batches,
+			extraction_method,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{record.id},
+			#{extractRounds},
+			#{sampleNumber},
+			#{checkTypes},
+			#{basedAmount},
+			#{basedAmountOther},
+			#{extractWay},
+			#{extractWayother},
+			#{reagentBatches},
+			#{extractionMethod},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_extract_record_item SET 	
+			record_id = #{record.id},
+			extract_rounds = #{extractRounds},
+			sample_number = #{sampleNumber},
+			check_types = #{checkTypes},
+			based_amount = #{basedAmount},
+			based_amount_other = #{basedAmountOther},
+			extract_way = #{extractWay},
+			extract_wayother = #{extractWayother},
+			reagent_batches = #{reagentBatches},
+			extraction_method = #{extractionMethod},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dna_extract_record_item SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE record_id = #{record.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

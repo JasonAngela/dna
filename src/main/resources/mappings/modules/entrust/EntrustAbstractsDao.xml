@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.entrust.dao.EntrustAbstractsDao">
+    
+	<sql id="entrustAbstractsColumns">
+		a.id AS "id",
+		a.register_id AS "register.id",
+		a.client_code AS "clientCode",
+		a.client_name AS "clientName",
+		a.gender AS "gender",
+		a.appellation AS "appellation",
+		a.birthday AS "birthday",
+		a.id_type AS "idType",
+		a.id_no AS "idNo",
+		a.id_pic AS "idPic",
+		a.client_pic AS "clientPic",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.dna_Experiment_Id AS "dnaExperimentId",
+		a.specimen_code as "specimenCode"
+	</sql>
+	
+	<sql id="entrustAbstractsJoins">
+		LEFT JOIN entrust_register b ON b.id = a.register_id
+	</sql>
+    
+	<select id="get" resultType="EntrustAbstracts">
+		SELECT 
+			<include refid="entrustAbstractsColumns"/>
+		FROM entrust_abstracts a
+		<include refid="entrustAbstractsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="listNotExperiment" resultType="EntrustAbstracts">
+		SELECT 
+			<include refid="entrustAbstractsColumns"/>
+		FROM entrust_abstracts a
+		<include refid="entrustAbstractsJoins"/>
+		WHERE a.register_id = #{registerId} and a.dna_Experiment_Id is null
+	</select>
+	
+	<select id="findList" resultType="EntrustAbstracts">
+		SELECT 
+			<include refid="entrustAbstractsColumns"/>
+		FROM entrust_abstracts a
+		<include refid="entrustAbstractsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="register != null and register.id != null and register.id != ''">
+				AND a.register_id = #{register.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllentrustAbstracts" resultType="EntrustAbstracts">
+		select * from
+		 entrust_abstracts a
+		where 
+		 register_id = #{register.id}
+	</select>
+	
+	
+	
+	
+	<select id="findAllList" resultType="EntrustAbstracts">
+		SELECT 
+			<include refid="entrustAbstractsColumns"/>
+		FROM entrust_abstracts a
+		<include refid="entrustAbstractsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO entrust_abstracts(
+			id,
+			register_id,
+			client_code,
+			client_name,
+			gender,
+			appellation,
+			birthday,
+			id_type,
+			id_no,
+			id_pic,
+			client_pic,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			dna_Experiment_Id,
+			specimen_code
+		) VALUES (
+			#{id},
+			#{register.id},
+			#{clientCode},
+			#{clientName},
+			#{gender},
+			#{appellation},
+			#{birthday},
+			#{idType},
+			#{idNo},
+			#{idPic},
+			#{clientPic},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{dnaExperimentId},
+			#{specimenCode}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE entrust_abstracts SET 	
+			client_name = #{clientName},
+			gender = #{gender},
+			appellation = #{appellation},
+			birthday = #{birthday},
+			id_type = #{idType},
+			id_no = #{idNo},
+			id_pic = #{idPic},
+			client_pic = #{clientPic},
+			remarks = #{remarks},
+			dna_Experiment_Id=#{dnaExperimentId},
+			specimen_code=#{specimenCode}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE entrust_abstracts SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE register_id = #{register.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

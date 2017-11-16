@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaPreparationReagentsIteamDao">
+    
+	<sql id="dnaPreparationReagentsIteamColumns">
+		a.id AS "id",
+		a.dna_preparation_reagents_id AS "dnaPreparationReagents.id",
+		a.sample_number AS "sampleNumber",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="dnaPreparationReagentsIteamJoins">
+		LEFT JOIN dna_preparation_reagents b ON b.id = a.dna_preparation_reagents_id
+	</sql>
+	
+	<select id="findNumber" resultType="DnaPreparationReagentsIteam">
+	SELECT 
+			<include refid="dnaPreparationReagentsIteamColumns"/> from dna_preparation_reagents_iteam a where a.sample_number=#{sample_number}
+	</select>
+    
+	<select id="get" resultType="DnaPreparationReagentsIteam">
+		SELECT 
+			<include refid="dnaPreparationReagentsIteamColumns"/>
+		FROM dna_preparation_reagents_iteam a
+		<include refid="dnaPreparationReagentsIteamJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DnaPreparationReagentsIteam">
+		SELECT 
+			<include refid="dnaPreparationReagentsIteamColumns"/>
+		FROM dna_preparation_reagents_iteam a
+		<include refid="dnaPreparationReagentsIteamJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="dnaPreparationReagents != null and dnaPreparationReagents.id != null and dnaPreparationReagents.id != ''">
+				AND a.dna_preparation_reagents_id = #{dnaPreparationReagents.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaPreparationReagentsIteam">
+		SELECT 
+			<include refid="dnaPreparationReagentsIteamColumns"/>
+		FROM dna_preparation_reagents_iteam a
+		<include refid="dnaPreparationReagentsIteamJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_preparation_reagents_iteam(
+			id,
+			dna_preparation_reagents_id,
+			sample_number,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{dnaPreparationReagents.id},
+			#{sampleNumber},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_preparation_reagents_iteam SET 	
+			dna_preparation_reagents_id = #{dnaPreparationReagents.id},
+			sample_number = #{sampleNumber},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dna_preparation_reagents_iteam SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE dna_preparation_reagents_id = #{dnaPreparationReagents.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

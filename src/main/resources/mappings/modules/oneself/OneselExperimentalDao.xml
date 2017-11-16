@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.oneself.dao.OneselExperimentalDao">
+    
+	<sql id="oneselExperimentalColumns">
+		a.id AS "oneself.id",
+		a.experimental_id AS "experimentalId",
+		a.code AS "code",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="oneselExperimentalJoins">
+		LEFT JOIN oneself b ON b.id = a.id
+	</sql>
+    
+	<select id="get" resultType="OneselExperimental">
+		SELECT 
+			<include refid="oneselExperimentalColumns"/>
+		FROM onesel_experimental a
+		<include refid="oneselExperimentalJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="OneselExperimental">
+		SELECT 
+			<include refid="oneselExperimentalColumns"/>
+		FROM onesel_experimental a
+		<include refid="oneselExperimentalJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="oneself != null and oneself.id != null and oneself.id != ''">
+				AND a.id = #{oneself.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="OneselExperimental">
+		SELECT 
+			<include refid="oneselExperimentalColumns"/>
+		FROM onesel_experimental a
+		<include refid="oneselExperimentalJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO onesel_experimental(
+			id,
+			experimental_id,
+			code,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{oneself.id},
+			#{experimentalId},
+			#{code},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE onesel_experimental SET 	
+			experimental_id = #{experimentalId},
+			code = #{code},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE onesel_experimental SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE id = #{oneself.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

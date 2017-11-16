@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.synth.dao.SynthGoodsStockDao">
+    
+	<sql id="synthGoodsStockColumns">
+		a.id AS "id",
+		a.goods_id AS "goods.id",
+		b.name  as "goods.name",
+		a.batch_number AS "batchNumber",
+		a.manufacturer AS "manufacturer",
+		a.qty AS "qty",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="synthGoodsStockJoins">
+		left join synth_goods b on a.goods_id = b.id
+	</sql>
+    
+	<select id="get" resultType="SynthGoodsStock">
+		SELECT 
+			<include refid="synthGoodsStockColumns"/>
+		FROM synth_goods_stock a
+		<include refid="synthGoodsStockJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SynthGoodsStock">
+		SELECT 
+			<include refid="synthGoodsStockColumns"/>
+		FROM synth_goods_stock a
+		<include refid="synthGoodsStockJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SynthGoodsStock">
+		SELECT 
+			<include refid="synthGoodsStockColumns"/>
+		FROM synth_goods_stock a
+		<include refid="synthGoodsStockJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO synth_goods_stock(
+			id,
+			goods_id,
+			batch_number,
+			manufacturer,
+			qty,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{goods.id},
+			#{batchNumber},
+			#{manufacturer},
+			#{qty},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE synth_goods_stock SET 	
+			goods_id = #{goods.id},
+			batch_number = #{batchNumber},
+			manufacturer = #{manufacturer},
+			qty = #{qty},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE synth_goods_stock SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

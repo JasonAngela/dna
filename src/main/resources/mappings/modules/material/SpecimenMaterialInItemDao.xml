@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.material.dao.SpecimenMaterialInItemDao">
+    
+	<sql id="specimenMaterialInItemColumns">
+		a.id AS "id",
+		a.material_in_id AS "materialIn.id",
+		a.abstracts_id AS "abstracts.id",
+		a.code AS "code",
+		a.client_code AS "clientCode",
+		a.material_type AS "materialType",
+		a.qty AS "qty",
+		a.measure AS "measure"
+	</sql>
+	
+	<sql id="specimenMaterialInItemJoins">
+		LEFT JOIN specimen_material_in b ON b.id = a.material_in_id
+	</sql>
+    
+	<select id="get" resultType="SpecimenMaterialInItem">
+		SELECT 
+			<include refid="specimenMaterialInItemColumns"/>
+		FROM specimen_material_in_item a
+		<include refid="specimenMaterialInItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SpecimenMaterialInItem">
+		SELECT 
+			<include refid="specimenMaterialInItemColumns"/>
+		FROM specimen_material_in_item a
+		<include refid="specimenMaterialInItemJoins"/>
+		<where>
+			
+			<if test="materialIn != null and materialIn.id != null and materialIn.id != ''">
+				AND a.material_in_id = #{materialIn.id}
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SpecimenMaterialInItem">
+		SELECT 
+			<include refid="specimenMaterialInItemColumns"/>
+		FROM specimen_material_in_item a
+		<include refid="specimenMaterialInItemJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO specimen_material_in_item(
+			id,
+			material_in_id,
+			abstracts_id,
+			code,
+			client_code,
+			material_type,
+			qty,
+			measure
+		) VALUES (
+			#{id},
+			#{materialIn.id},
+			#{abstracts.id},
+			#{code},
+			#{clientCode},
+			#{materialType},
+			#{qty},
+			#{measure}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE specimen_material_in_item SET 	
+			material_in_id = #{materialIn.id},
+			abstracts_id = #{abstracts.id},
+			code = #{code},
+			client_code = #{clientCode},
+			material_type = #{materialType},
+			qty = #{qty},
+			measure = #{measure}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM specimen_material_in_item
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE material_in_id = #{materialIn.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.xueka.dao.SpecimenXuekaDao">
+    
+	<sql id="specimenXuekaColumns">
+		a.id AS "id",
+		a.xueka_id AS "xuekaId",
+		a.material_register_item_id AS "materialRegisterItemId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="specimenXuekaJoins">
+	</sql>
+    
+	<select id="get" resultType="SpecimenXueka">
+		SELECT 
+			<include refid="specimenXuekaColumns"/>
+		FROM specimen_xueka a
+		
+		<where> 
+		
+		a.xueka_id = #{xuekaId}
+		
+		</where>
+		
+	</select>
+	
+	<select id="findList" resultType="SpecimenXueka">
+		SELECT 
+			<include refid="specimenXuekaColumns"/>
+		FROM specimen_xueka a
+		<include refid="specimenXuekaJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="xuekaId != null and xuekaId != ''">
+				AND a.xueka_id = #{xuekaId}
+			</if>
+			<if test="materialRegisterItemId != null and materialRegisterItemId != ''">
+				AND a.material_register_item_id = #{materialRegisterItemId}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SpecimenXueka">
+		SELECT 
+			<include refid="specimenXuekaColumns"/>
+		FROM specimen_xueka a
+		<include refid="specimenXuekaJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO specimen_xueka(
+			id,
+			xueka_id,
+			material_register_item_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{xuekaId},
+			#{materialRegisterItemId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE specimen_xueka SET 	
+			xueka_id = #{xuekaId},
+			material_register_item_id = #{materialRegisterItemId},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE specimen_xueka SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

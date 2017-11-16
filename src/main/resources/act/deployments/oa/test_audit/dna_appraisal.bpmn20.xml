@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/processdef">
+  <process id="dna_appraisal" name="dna鉴定" isExecutable="true">
+    <startEvent id="sid-69F583E9-0235-41A0-9107-212769AC9C26" activiti:initiator="apply" activiti:formKey="/dna/dnaExperiment/form"></startEvent>
+    <sequenceFlow id="sid-86B048A7-28C2-4D22-85BB-E0DF0D76A101" sourceRef="sid-69F583E9-0235-41A0-9107-212769AC9C26" targetRef="sid-1A657D29-7C15-4D4E-B2DF-C30761B8AFB2"></sequenceFlow>
+    <userTask id="sid-1A657D29-7C15-4D4E-B2DF-C30761B8AFB2" name="实验记录" activiti:assignee="${apply}" activiti:formKey="/dna/dnaExperiment/board"></userTask>
+    <userTask id="sid-858520CF-9A6D-4EAF-8933-A00A916AD7D7" name="导入实验结果" activiti:assignee="${apply}"></userTask>
+    <sequenceFlow id="sid-FFFF8351-4D4D-42A4-9616-06908AADD07A" sourceRef="sid-1A657D29-7C15-4D4E-B2DF-C30761B8AFB2" targetRef="sid-858520CF-9A6D-4EAF-8933-A00A916AD7D7"></sequenceFlow>
+    <serviceTask id="sid-3DCF39A3-C79A-462E-A596-893EEA8D9285" name="自动激活委托流程" activiti:delegateExpression="${autoActivateDelegate}"></serviceTask>
+    <sequenceFlow id="sid-A0877F91-5810-4DF1-B282-C3ACA31084A8" sourceRef="sid-858520CF-9A6D-4EAF-8933-A00A916AD7D7" targetRef="sid-3DCF39A3-C79A-462E-A596-893EEA8D9285"></sequenceFlow>
+    <endEvent id="sid-8DBB1117-8625-444F-B748-73012C202074"></endEvent>
+    <sequenceFlow id="sid-7486E170-1BEE-4A9B-9544-0AACDAE1A330" sourceRef="sid-3DCF39A3-C79A-462E-A596-893EEA8D9285" targetRef="sid-8DBB1117-8625-444F-B748-73012C202074"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_dna_appraisal">
+    <bpmndi:BPMNPlane bpmnElement="dna_appraisal" id="BPMNPlane_dna_appraisal">
+      <bpmndi:BPMNShape bpmnElement="sid-69F583E9-0235-41A0-9107-212769AC9C26" id="BPMNShape_sid-69F583E9-0235-41A0-9107-212769AC9C26">
+        <omgdc:Bounds height="30.0" width="30.0" x="90.0" y="55.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-1A657D29-7C15-4D4E-B2DF-C30761B8AFB2" id="BPMNShape_sid-1A657D29-7C15-4D4E-B2DF-C30761B8AFB2">
+        <omgdc:Bounds height="80.0" width="100.0" x="240.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-858520CF-9A6D-4EAF-8933-A00A916AD7D7" id="BPMNShape_sid-858520CF-9A6D-4EAF-8933-A00A916AD7D7">
+        <omgdc:Bounds height="80.0" width="100.0" x="420.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-3DCF39A3-C79A-462E-A596-893EEA8D9285" id="BPMNShape_sid-3DCF39A3-C79A-462E-A596-893EEA8D9285">
+        <omgdc:Bounds height="80.0" width="100.0" x="585.0" y="30.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="sid-8DBB1117-8625-444F-B748-73012C202074" id="BPMNShape_sid-8DBB1117-8625-444F-B748-73012C202074">
+        <omgdc:Bounds height="28.0" width="28.0" x="730.5" y="56.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="sid-86B048A7-28C2-4D22-85BB-E0DF0D76A101" id="BPMNEdge_sid-86B048A7-28C2-4D22-85BB-E0DF0D76A101">
+        <omgdi:waypoint x="120.0" y="70.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="70.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-FFFF8351-4D4D-42A4-9616-06908AADD07A" id="BPMNEdge_sid-FFFF8351-4D4D-42A4-9616-06908AADD07A">
+        <omgdi:waypoint x="340.0" y="70.0"></omgdi:waypoint>
+        <omgdi:waypoint x="420.0" y="70.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-A0877F91-5810-4DF1-B282-C3ACA31084A8" id="BPMNEdge_sid-A0877F91-5810-4DF1-B282-C3ACA31084A8">
+        <omgdi:waypoint x="520.0" y="70.0"></omgdi:waypoint>
+        <omgdi:waypoint x="585.0" y="70.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="sid-7486E170-1BEE-4A9B-9544-0AACDAE1A330" id="BPMNEdge_sid-7486E170-1BEE-4A9B-9544-0AACDAE1A330">
+        <omgdi:waypoint x="685.0" y="70.0"></omgdi:waypoint>
+        <omgdi:waypoint x="730.5" y="70.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

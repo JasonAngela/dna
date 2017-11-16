@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaGeneLociDao">
+    
+	<sql id="dnaGeneLociColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.seq AS "seq"
+	</sql>
+	
+	<sql id="dnaGeneLociJoins">
+	</sql>
+    
+	<select id="get" resultType="DnaGeneLoci">
+		SELECT 
+			<include refid="dnaGeneLociColumns"/>
+		FROM dna_gene_loci a
+		<include refid="dnaGeneLociJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DnaGeneLoci">
+		SELECT 
+			<include refid="dnaGeneLociColumns"/>
+		FROM dna_gene_loci a
+		<include refid="dnaGeneLociJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.seq
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaGeneLoci">
+		SELECT 
+			<include refid="dnaGeneLociColumns"/>
+		FROM dna_gene_loci a
+		<include refid="dnaGeneLociJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.seq
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_gene_loci(
+			id,
+			name,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			seq
+		) VALUES (
+			#{id},
+			#{name},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{seq}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_gene_loci SET 	
+			name = #{name},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			seq = #{seq}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dna_gene_loci SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

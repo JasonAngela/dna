@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaExperimentDao">
+    
+	<sql id="dnaExperimentColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.cassette_id AS "cassette.id",
+		a.lab_id AS "lab.id",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.status AS "status",
+		a.proc_ins_id AS "procInsId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.extraction_chambers AS "extractionChambers",
+		a.expansion_chambers AS "expansionChambers",
+		a.elctrophoresis_chambers AS "elctrophoresisChambers",
+		a.operator_id AS "operator.id",
+		u3.name  as "operator.name"
+	</sql>
+	
+	<sql id="dnaExperimentJoins">
+	LEFT JOIN sys_user u3 ON u3.id = a.operator_id
+	left join synth_lab b on a.lab_id = b.id
+	</sql>
+    
+	<select id="get" resultType="DnaExperiment">
+		SELECT 
+			<include refid="dnaExperimentColumns"/>
+		FROM dna_experiment a
+		<include refid="dnaExperimentJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DnaExperiment">
+		SELECT 
+			<include refid="dnaExperimentColumns"/>
+		FROM dna_experiment a
+		<include refid="dnaExperimentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="code != null and code != ''">
+				AND a.code = #{code}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaExperiment">
+		SELECT 
+			<include refid="dnaExperimentColumns"/>
+		FROM dna_experiment a
+		<include refid="dnaExperimentJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.code DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_experiment(
+			id,
+			code,
+			cassette_id,
+			lab_id,
+			start_time,
+			end_time,
+			status,
+			proc_ins_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			extraction_chambers,
+			expansion_chambers,
+			elctrophoresis_chambers,
+			operator_id
+		) VALUES (
+			#{id},
+			#{code},
+			#{cassette.id},
+			#{lab.id},
+			#{startTime},
+			#{endTime},
+			#{status},
+			#{procInsId},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{extractionChambers},
+			#{expansionChambers},
+			#{elctrophoresisChambers},
+			#{operator.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_experiment SET 	
+			code = #{code},
+			cassette_id = #{cassette.id},
+			lab_id = #{lab.id},
+			start_time = #{startTime},
+			end_time = #{endTime},
+			status = #{status},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			extraction_chambers = #{extractionChambers},
+			expansion_chambers = #{expansionChambers},
+			elctrophoresis_chambers = #{elctrophoresisChambers},
+			operator_id  = #{operator.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dna_experiment SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

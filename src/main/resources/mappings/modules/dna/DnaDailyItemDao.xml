@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaDailyItemDao">
+    
+	<sql id="dnaDailyItemColumns">
+		a.id AS "id",
+		a.daily_id AS "daily.id",
+		a.lab_id AS "lab.id",
+		c.name as "lab.name",
+		a.temperature AS "temperature",
+		a.relative_humidity AS "relativeHumidity",
+		a.refrigerator_temperature AS "refrigeratorTemperature",
+		a.other AS "other",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="dnaDailyItemJoins">
+		LEFT JOIN dna_daily b ON b.id = a.daily_id	
+		left join synth_lab c on a.lab_id = c.id
+	</sql>
+	
+	<select id="get" resultType="DnaDailyItem">
+		SELECT 
+			<include refid="dnaDailyItemColumns"/>
+		FROM dna_daily_item a
+		<include refid="dnaDailyItemJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findDate" resultType="DnaDailyItem">
+	select <include refid="dnaDailyItemColumns"/> from dna_daily_item a 
+		LEFT JOIN dna_daily b ON b.id = a.daily_id	
+		left join synth_lab c on a.lab_id = c.id
+		 where to_days(a.CREATE_DATE) = to_days(now())
+	</select>
+	
+	
+	<select id="findList" resultType="DnaDailyItem">
+		SELECT 
+			<include refid="dnaDailyItemColumns"/>
+		FROM dna_daily_item a
+		<include refid="dnaDailyItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="daily != null and daily.id != null and daily.id != ''">
+				AND a.daily_id = #{daily.id}
+			</if>
+			<if test="lab != null and lab.id != null and lab.id != ''">
+				AND a.lab_id = #{lab.id}
+			</if>
+			<if test="createDate != null and createDate != ''">
+				AND a.create_date = #{createDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaDailyItem">
+		SELECT 
+			<include refid="dnaDailyItemColumns"/>
+		FROM dna_daily_item a
+		<include refid="dnaDailyItemJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_daily_item(
+			id,
+			daily_id,
+			lab_id,
+			temperature,
+			relative_humidity,
+			refrigerator_temperature,
+			other,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{daily.id},
+			#{lab.id},
+			#{temperature},
+			#{relativeHumidity},
+			#{refrigeratorTemperature},
+			#{other},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_daily_item SET 	
+			daily_id = #{daily.id},
+			lab_id = #{lab.id},
+			temperature = #{temperature},
+			relative_humidity = #{relativeHumidity},
+			refrigerator_temperature = #{refrigeratorTemperature},
+			other = #{other},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dna_daily_item SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE daily_id = #{daily.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

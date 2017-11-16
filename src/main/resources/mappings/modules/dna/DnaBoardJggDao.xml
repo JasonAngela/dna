@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaBoardJggDao">
+    
+	<sql id="dnaBoardJggColumns">
+		a.id AS "id",
+		a.board_id AS "board.id",
+		a.hang AS "hang",
+		a.lie AS "lie",
+		a.specimen_code AS "specimenCode",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="dnaBoardJggJoins">
+		LEFT JOIN dna_board b ON b.id = a.board_id
+	</sql>
+    
+	<select id="get" resultType="DnaBoardJgg">
+		SELECT 
+			<include refid="dnaBoardJggColumns"/>
+		FROM dna_board_jgg a
+		<include refid="dnaBoardJggJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DnaBoardJgg">
+		SELECT 
+			<include refid="dnaBoardJggColumns"/>
+		FROM dna_board_jgg a
+		<include refid="dnaBoardJggJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="board != null and board.id != null and board.id != ''">
+				AND a.board_id = #{board.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.hang,a.lie
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaBoardJgg">
+		SELECT 
+			<include refid="dnaBoardJggColumns"/>
+		FROM dna_board_jgg a
+		<include refid="dnaBoardJggJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findBoard" resultType="DnaBoardJgg">
+	SELECT <include refid="dnaBoardJggColumns"/> FROM dna_board_jgg a WHERE a.specimen_code=#{specimen_code}
+	</select>
+	
+	
+	<insert id="insert">
+		INSERT INTO dna_board_jgg(
+			id,
+			board_id,
+			hang,
+			lie,
+			specimen_code,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{board.id},
+			#{hang},
+			#{lie},
+			#{specimenCode},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_board_jgg SET 	
+			board_id = #{board.id},
+			hang = #{hang},
+			lie = #{lie},
+			specimen_code = #{specimenCode},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dna_board_jgg SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE board_id = #{board.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

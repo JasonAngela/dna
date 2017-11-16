@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaElectrophoresisPartingDao">
+    
+	<sql id="dnaElectrophoresisPartingColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.lab_id AS "lab.id",
+		b.name as "lab.name",
+		a.temperature AS "temperature",
+		a.humidity AS "humidity",
+		a.refrigerator_temperature AS "refrigeratorTemperature",
+		a.formamide_batch_number AS "formamideBatchNumber",
+		a.validated AS "validated",
+		a.validated1 AS "validated1",
+		a.internal_standard AS "internalStandard",
+		a.product AS "product",
+		a.positive_control AS "positiveControl",
+		a.negative_control AS "negativeControl",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.operator_id AS "operator.id",
+		u3.name  as "operator.name"
+	</sql>
+	
+	<sql id="dnaElectrophoresisPartingJoins">
+	LEFT JOIN sys_user u3 ON u3.id = a.operator_id
+	left join synth_lab b on a.lab_id = b.id
+	</sql>
+    
+	<select id="get" resultType="DnaElectrophoresisParting">
+		SELECT 
+			<include refid="dnaElectrophoresisPartingColumns"/>
+		FROM dna_electrophoresis_parting a
+		<include refid="dnaElectrophoresisPartingJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DnaElectrophoresisParting">
+		SELECT 
+			<include refid="dnaElectrophoresisPartingColumns"/>
+		FROM dna_electrophoresis_parting a
+		<include refid="dnaElectrophoresisPartingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="lab != null and lab.id != null and lab.id != ''">
+				AND a.lab_id = #{lab.id}
+			</if>
+			<if test="negativeControl != null and negativeControl != ''">
+				AND a.negative_control = #{negativeControl}
+			</if>
+			<if test="createDate != null and createDate != ''">
+				AND a.create_date = #{createDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+					ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaElectrophoresisParting">
+		SELECT 
+			<include refid="dnaElectrophoresisPartingColumns"/>
+		FROM dna_electrophoresis_parting a
+		<include refid="dnaElectrophoresisPartingJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_electrophoresis_parting(
+			id,
+			code,
+			lab_id,
+			temperature,
+			humidity,
+			refrigerator_temperature,
+			formamide_batch_number,
+			validated,
+			validated1,
+			internal_standard,
+			product,
+			positive_control,
+			negative_control,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			operator_id
+		) VALUES (
+			#{id},
+			#{code},
+			#{lab.id},
+			#{temperature},
+			#{humidity},
+			#{refrigeratorTemperature},
+			#{formamideBatchNumber},
+			#{validated},
+			#{validated1},
+			#{internalStandard},
+			#{product},
+			#{positiveControl},
+			#{negativeControl},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{operator.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_electrophoresis_parting SET 	
+			code = #{code},
+			lab_id = #{lab.id},
+			temperature = #{temperature},
+			humidity = #{humidity},
+			refrigerator_temperature = #{refrigeratorTemperature},
+			formamide_batch_number = #{formamideBatchNumber},
+			validated = #{validated},
+			validated1 = #{validated1},
+			internal_standard = #{internalStandard},
+			product = #{product},
+			positive_control = #{positiveControl},
+			negative_control = #{negativeControl},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			operator_id  = #{operator.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dna_electrophoresis_parting SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

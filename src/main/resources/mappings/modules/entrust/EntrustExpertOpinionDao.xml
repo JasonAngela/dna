@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.entrust.dao.EntrustExpertOpinionDao">
+    
+	<sql id="entrustExpertOpinionColumns">
+		a.id AS "id",
+		a.register_id AS "register.id",
+		a.drafter AS "drafter",
+		a.draft_time AS "draftTime",
+		a.version AS "version",
+		a.draft AS "draft",
+		a.draft_remark AS "draftRemark",
+		a.seconder AS "seconder",
+		a.second_remark AS "secondRemark",
+		a.second_time AS "secondTime",
+		a.director AS "director",
+		a.director_remark AS "directorRemark",
+		a.director_time AS "directorTime",
+		a.finaler AS "finaler",
+		a.final_version AS "finalVersion",
+		a.final_time AS "finalTime",
+		a.explain_value as "explain",
+		a.explain_remark as "explainRemark"
+	</sql>
+	
+	<sql id="entrustExpertOpinionJoins">
+	</sql>
+    
+	<select id="get" resultType="EntrustExpertOpinion">
+		SELECT 
+			<include refid="entrustExpertOpinionColumns"/>
+		FROM entrust_expert_opinion a
+		<include refid="entrustExpertOpinionJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	<select id="getByRegisterId" resultType="EntrustExpertOpinion">
+		SELECT 
+			<include refid="entrustExpertOpinionColumns"/>
+		FROM entrust_expert_opinion a
+		<include refid="entrustExpertOpinionJoins"/>
+		WHERE a.register_id = #{registerId}
+		order by version desc
+	</select>
+	
+	<select id="findList" resultType="EntrustExpertOpinion">
+		SELECT 
+			<include refid="entrustExpertOpinionColumns"/>
+		FROM entrust_expert_opinion a
+		<include refid="entrustExpertOpinionJoins"/>
+		<where>
+			
+			<if test="version != null and version != ''">
+				AND a.version = #{version}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="EntrustExpertOpinion">
+		SELECT 
+			<include refid="entrustExpertOpinionColumns"/>
+		FROM entrust_expert_opinion a
+		<include refid="entrustExpertOpinionJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO entrust_expert_opinion(
+			id,
+			register_id,
+			drafter,
+			draft_time,
+			version,
+			draft,
+			draft_remark,
+			seconder,
+			second_remark,
+			second_time,
+			director,
+			director_remark,
+			director_time,
+			finaler,
+			final_version,
+			final_time,
+			explain_value,
+			explain_remark
+		) VALUES (
+			#{id},
+			#{register.id},
+			#{drafter},
+			#{draftTime},
+			#{version},
+			#{draft},
+			#{draftRemark},
+			#{seconder},
+			#{secondRemark},
+			#{secondTime},
+			#{director},
+			#{directorRemark},
+			#{directorTime},
+			#{finaler},
+			#{finalVersion},
+			#{finalTime},
+			#{explain},
+			#{explainRemark}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE entrust_expert_opinion SET 	
+			register_id = #{register.id},
+			drafter = #{drafter},
+			draft_time = #{draftTime},
+			version = #{version},
+			draft = #{draft},
+			draft_remark = #{draftRemark},
+			seconder = #{seconder},
+			second_remark = #{secondRemark},
+			second_time = #{secondTime},
+			director = #{director},
+			director_remark = #{directorRemark},
+			director_time = #{directorTime},
+			finaler = #{finaler},
+			final_version = #{finalVersion},
+			final_time = #{finalTime},
+			explain_value = #{explain},
+			explain_remark = #{explainRemark}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM entrust_expert_opinion
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

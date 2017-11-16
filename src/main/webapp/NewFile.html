@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <script>
+        function deleteRangeContent(onlyContent) {
+            var div = document.getElementById("div");
+            var rangobj = document.createRange();
+            if (onlyContent) {
+                rangobj.selectNodeContents(div);
+                rangobj.deleteContents();
+            } else {
+                rangobj.selectNode(div);
+                rangobj.deleteContents();
+
+            }
+        }
+        function selectRange(){
+        	var userSelection;
+        	var contentDiv = document.selectby
+        	if (window.getSelection) { //现代浏览器
+        	    userSelection = window.getSelection();
+        	} else if (document.selection) { //IE浏览器 考虑到Opera，应该放在后面
+        	    userSelection = document.selection.createRange();
+        	}
+        	if(userSelection!=null ||userSelection!=''){
+        		alert(userSelection);
+        	}
+        }
+    </script>
+</head>
+<body>
+<textarea rows="4" cols="4" onmousemove="selectRange()" id="content">sdfsdfsdfsdf</textarea>
+</body>
+</html>

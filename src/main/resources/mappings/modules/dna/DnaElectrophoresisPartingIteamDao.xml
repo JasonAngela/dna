@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaElectrophoresisPartingIteamDao">
+    
+	<sql id="dnaElectrophoresisPartingIteamColumns">
+		a.id AS "id",
+		a.dna_electrophoresis_parting_id AS "dnaElectrophoresisParting.id",
+		a.sample_number AS "sampleNumber",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="dnaElectrophoresisPartingIteamJoins">
+		LEFT JOIN dna_electrophoresis_parting b ON b.id = a.dna_electrophoresis_parting_id
+	</sql>
+    
+	<select id="get" resultType="DnaElectrophoresisPartingIteam">
+		SELECT 
+			<include refid="dnaElectrophoresisPartingIteamColumns"/>
+		FROM dna_electrophoresis_parting_iteam a
+		<include refid="dnaElectrophoresisPartingIteamJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findNumber" resultType="DnaElectrophoresisPartingIteam">
+	SELECT 
+			<include refid="dnaElectrophoresisPartingIteamColumns"/>
+		FROM dna_electrophoresis_parting_iteam a where a.sample_number=#{sample_number}
+	
+	</select>
+	
+	<select id="findList" resultType="DnaElectrophoresisPartingIteam">
+		SELECT 
+			<include refid="dnaElectrophoresisPartingIteamColumns"/>
+		FROM dna_electrophoresis_parting_iteam a
+		<include refid="dnaElectrophoresisPartingIteamJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="dnaElectrophoresisParting != null and dnaElectrophoresisParting.id != null and dnaElectrophoresisParting.id != ''">
+				AND a.dna_electrophoresis_parting_id = #{dnaElectrophoresisParting.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaElectrophoresisPartingIteam">
+		SELECT 
+			<include refid="dnaElectrophoresisPartingIteamColumns"/>
+		FROM dna_electrophoresis_parting_iteam a
+		<include refid="dnaElectrophoresisPartingIteamJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date ASC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_electrophoresis_parting_iteam(
+			id,
+			dna_electrophoresis_parting_id,
+			sample_number,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{dnaElectrophoresisParting.id},
+			#{sampleNumber},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_electrophoresis_parting_iteam SET 	
+			dna_electrophoresis_parting_id = #{dnaElectrophoresisParting.id},
+			sample_number = #{sampleNumber},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dna_electrophoresis_parting_iteam SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		<choose>
+			<when test="id !=null and id != ''">
+				WHERE id = #{id}
+			</when>
+			<otherwise>
+				WHERE dna_electrophoresis_parting_id = #{dnaElectrophoresisParting.id}
+			</otherwise>
+		</choose>
+	</update>
+	
+</mapper>

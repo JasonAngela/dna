@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaExtractRecordDao">
+    
+	<sql id="dnaExtractRecordColumns">
+		a.id AS "id",
+		a.code AS "code",
+		b.name as "lab.name",
+		a.lab_id AS "lab.id",
+		a.equipment_id AS "equipment.id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.temperature AS "temperature",
+		a.humidity AS "humidity",
+		a.refrigerator_temperature AS "refrigeratorTemperature",
+		a.before_trial AS "beforeTrial",
+		a.instrument_use AS "instrumentUse",
+		a.biosafety_cabinet AS "biosafetyCabinet",
+		a.final_template AS "finalTemplate",
+		a.extracted_template AS "extractedTemplate",
+		a.heating_process AS "heatingProcess",
+		a.storage_temperature AS "storageTemperature",
+		a.extractors AS "extractors",
+		a.reviewer AS "reviewer",
+		a.transfer_template AS "transferTemplate",
+		a.recipient AS "recipient",
+		a.template_handover_date AS "templateHandoverDate",
+		a.other AS "other",
+		a.otherone AS "otherone",
+		a.othertow AS "othertow",
+		a.othertr AS "othertr",
+		a.otherfour AS "otherfour",
+		a.otherfive AS "otherfive",
+		a.operator_id AS "operator.id",
+		u3.name  as "operator.name"
+	</sql>
+	
+	<sql id="dnaExtractRecordJoins">
+	LEFT JOIN sys_user u3 ON u3.id = a.operator_id
+	left join synth_lab b on a.lab_id = b.id
+	</sql>
+    
+	<select id="get" resultType="DnaExtractRecord">
+		SELECT 
+			<include refid="dnaExtractRecordColumns"/>
+		FROM dna_extract_record a
+		<include refid="dnaExtractRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DnaExtractRecord">
+		SELECT 
+			<include refid="dnaExtractRecordColumns"/>
+		FROM dna_extract_record a
+		<include refid="dnaExtractRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="lab != null and lab.id != null and lab.id != ''">
+				AND a.lab_id = #{lab.id}
+			</if>
+			<if test="equipment != null and equipment.id != null and equipment.id != ''">
+				AND a.equipment_id = #{equipment.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaExtractRecord">
+		SELECT 
+			<include refid="dnaExtractRecordColumns"/>
+		FROM dna_extract_record a
+		<include refid="dnaExtractRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_extract_record(
+			id,
+			code,
+			lab_id,
+			equipment_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			temperature,
+			humidity,
+			refrigerator_temperature,
+			before_trial,
+			instrument_use,
+			biosafety_cabinet,
+			final_template,
+			extracted_template,
+			heating_process,
+			storage_temperature,
+			extractors,
+			reviewer,
+			transfer_template,
+			recipient,
+			template_handover_date,
+			other,
+			otherone,
+			othertow,
+			othertr,
+			otherfour,
+			otherfive,
+			operator_id
+		) VALUES (
+			#{id},
+			#{code},
+			#{lab.id},
+			#{equipment.id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{temperature},
+			#{humidity},
+			#{refrigeratorTemperature},
+			#{beforeTrial},
+			#{instrumentUse},
+			#{biosafetyCabinet},
+			#{finalTemplate},
+			#{extractedTemplate},
+			#{heatingProcess},
+			#{storageTemperature},
+			#{extractors},
+			#{reviewer},
+			#{transferTemplate},
+			#{recipient},
+			#{templateHandoverDate},
+			#{other},
+			#{otherone},
+			#{othertow},
+			#{othertr},
+			#{otherfour},
+			#{otherfive},
+			#{operator.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_extract_record SET 	
+			code = #{code},
+			lab_id = #{lab.id},
+			equipment_id = #{equipment.id},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			temperature = #{temperature},
+			humidity = #{humidity},
+			refrigerator_temperature = #{refrigeratorTemperature},
+			before_trial = #{beforeTrial},
+			instrument_use = #{instrumentUse},
+			biosafety_cabinet = #{biosafetyCabinet},
+			final_template = #{finalTemplate},
+			extracted_template = #{extractedTemplate},
+			heating_process = #{heatingProcess},
+			storage_temperature = #{storageTemperature},
+			extractors = #{extractors},
+			reviewer = #{reviewer},
+			transfer_template = #{transferTemplate},
+			recipient = #{recipient},
+			template_handover_date = #{templateHandoverDate},
+			other = #{other},
+			otherone = #{otherone},
+			othertow = #{othertow},
+			othertr = #{othertr},
+			otherfour = #{otherfour},
+			otherfive = #{otherfive},
+			operator_id  = #{operator.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dna_extract_record SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

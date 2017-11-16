@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.dna.dao.DnaPreparationReagentsDao">
+    
+	<sql id="dnaPreparationReagentsColumns">
+		a.id AS "id",
+		a.code AS "code",
+		b.name as "lab.name",
+		a.lab_id AS "lab.id",
+		a.temperature AS "temperature",
+		a.humidity AS "humidity",
+		a.refrigerator_temperature AS "refrigeratorTemperature",
+		a.other AS "other",
+		a.otherone AS "otherone",
+		a.othertow AS "othertow",
+		a.othertr AS "othertr",
+		a.otherfour AS "otherfour",
+		a.otherfive AS "otherfive",
+		a.pcr_reagent_source AS "pcrReagentSource",
+		a.first AS "first",
+		a.second AS "second",
+		a.third AS "third",
+		a.fourth AS "fourth",
+		a.fifth AS "fifth",
+		a.n_add_one AS "nAddOne",
+		a.total_one AS "totalOne",
+		a.total_two AS "totalTwo",
+		a.total_three AS "totalThree",
+		a.total_four AS "totalFour",
+		a.total_five AS "totalFive",
+		a.instrument_use AS "instrumentUse",
+		a.user_date AS "userDate",
+		a.surveyor AS "surveyor",
+		a.reviewer AS "reviewer",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.before_trial AS "beforeTrial",
+		a.operator_id AS "operator.id",
+		u3.name  as "operator.name"
+	</sql>
+	
+	<sql id="dnaPreparationReagentsJoins">
+	LEFT JOIN sys_user u3 ON u3.id = a.operator_id
+	left join synth_lab b on a.lab_id = b.id
+	</sql>
+    
+	<select id="get" resultType="DnaPreparationReagents">
+		SELECT 
+			<include refid="dnaPreparationReagentsColumns"/>
+		FROM dna_preparation_reagents a
+		<include refid="dnaPreparationReagentsJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DnaPreparationReagents">
+		SELECT 
+			<include refid="dnaPreparationReagentsColumns"/>
+		FROM dna_preparation_reagents a
+		<include refid="dnaPreparationReagentsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="lab != null and lab.id != null and lab.id != ''">
+				AND a.lab_id = #{lab.id}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="DnaPreparationReagents">
+		SELECT 
+			<include refid="dnaPreparationReagentsColumns"/>
+		FROM dna_preparation_reagents a
+		<include refid="dnaPreparationReagentsJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO dna_preparation_reagents(
+			id,
+			code,
+			lab_id,
+			temperature,
+			humidity,
+			refrigerator_temperature,
+			other,
+			otherone,
+			othertow,
+			othertr,
+			otherfour,
+			otherfive,
+			pcr_reagent_source,
+			first,
+			second,
+			third,
+			fourth,
+			fifth,
+			n_add_one,
+			total_one,
+			total_two,
+			total_three,
+			total_four,
+			total_five,
+			instrument_use,
+			user_date,
+			surveyor,
+			reviewer,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag,
+			before_trial,
+			operator_id
+		) VALUES (
+			#{id},
+			#{code},
+			#{lab.id},
+			#{temperature},
+			#{humidity},
+			#{refrigeratorTemperature},
+			#{other},
+			#{otherone},
+			#{othertow},
+			#{othertr},
+			#{otherfour},
+			#{otherfive},
+			#{pcrReagentSource},
+			#{first},
+			#{second},
+			#{third},
+			#{fourth},
+			#{fifth},
+			#{nAddOne},
+			#{totalOne},
+			#{totalTwo},
+			#{totalThree},
+			#{totalFour},
+			#{totalFive},
+			#{instrumentUse},
+			#{userDate},
+			#{surveyor},
+			#{reviewer},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag},
+			#{beforeTrial},
+			#{operator.id}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE dna_preparation_reagents SET 	
+			code = #{code},
+			lab_id = #{lab.id},
+			temperature = #{temperature},
+			humidity = #{humidity},
+			refrigerator_temperature = #{refrigeratorTemperature},
+			other = #{other},
+			otherone = #{otherone},
+			othertow = #{othertow},
+			othertr = #{othertr},
+			otherfour = #{otherfour},
+			otherfive = #{otherfive},
+			pcr_reagent_source = #{pcrReagentSource},
+			first = #{first},
+			second = #{second},
+			third = #{third},
+			fourth = #{fourth},
+			fifth = #{fifth},
+			n_add_one = #{nAddOne},
+			total_one = #{totalOne},
+			total_two = #{totalTwo},
+			total_three = #{totalThree},
+			total_four = #{totalFour},
+			total_five = #{totalFive},
+			instrument_use = #{instrumentUse},
+			user_date = #{userDate},
+			surveyor = #{surveyor},
+			reviewer = #{reviewer},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks},
+			before_trial = #{beforeTrial},
+			operator_id  = #{operator.id}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE dna_preparation_reagents SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

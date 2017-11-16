@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.thinkgem.jeesite.modules.synth.dao.SynthLabUsageRecordDao">
+    
+	<sql id="synthLabUsageRecordColumns">
+		a.id AS "id",
+		a.lab_id AS "lab.id",
+		b.name AS "lab.name",
+		u3.name AS "operator.name",
+		a.operator_id AS "operator.id",
+		a.operate_date AS "operateDate",
+		a.register_id AS "register.id",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="synthLabUsageRecordJoins">
+	LEFT JOIN sys_user u3 ON u3.id = a.operator_id
+		LEFT JOIN synth_lab b ON a.LAB_ID =b.ID
+	</sql>
+    
+	<select id="get" resultType="SynthLabUsageRecord">
+		SELECT 
+			<include refid="synthLabUsageRecordColumns"/>
+		FROM synth_lab_usage_record a
+		<include refid="synthLabUsageRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="SynthLabUsageRecord">
+		SELECT 
+			<include refid="synthLabUsageRecordColumns"/>
+		FROM synth_lab_usage_record a
+		<include refid="synthLabUsageRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="SynthLabUsageRecord">
+		SELECT 
+			<include refid="synthLabUsageRecordColumns"/>
+		FROM synth_lab_usage_record a
+		<include refid="synthLabUsageRecordJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO synth_lab_usage_record(
+			id,
+			lab_id,
+			operator_id,
+			operate_date,
+			register_id,
+			create_by,
+			create_date,
+			update_by,
+			update_date,
+			remarks,
+			del_flag
+		) VALUES (
+			#{id},
+			#{lab.id},
+			#{operator.id},
+			#{operateDate},
+			#{register.id},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate},
+			#{remarks},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE synth_lab_usage_record SET 	
+			lab_id = #{lab.id},
+			operator_id = #{operator.id},
+			operate_date = #{operateDate},
+			register_id = #{register.id},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate},
+			remarks = #{remarks}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE synth_lab_usage_record SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
