@@ -436,8 +436,8 @@ public class DnaExperimentController extends BaseController {
 	public String calcu(HttpServletRequest request,String id,Model model,DnaSpe dnaSpe,HttpServletResponse response){
 
 			List<DnaExperimentStr> daExperimentStrs=new ArrayList<DnaExperimentStr>();
-			Map<String,Map<String,String>> strMapList=new HashMap<String, Map<String,String>>();
-			List<DnaSpeIteam>dnaSpeIteams=new ArrayList<DnaSpeIteam>();
+
+			List<DnaSpeIteam> dnaSpeIteams=new ArrayList<DnaSpeIteam>();
 			for (int i = 0; i < dnaSpe.getDnaSpeIteams().size(); i++) {
 				if(dnaSpe.getDnaSpeIteams().get(i) .getSpecimen()!=null){
 					dnaSpeIteams.add(dnaSpe.getDnaSpeIteams().get(i));
@@ -446,18 +446,17 @@ public class DnaExperimentController extends BaseController {
 
 
 
-			List<Map<String,Map<String,String>>> mapList = new ArrayList<Map<String, Map<String, String>>>();
+		 List<Map<String,Map<String,String>>> mapList = new ArrayList<Map<String, Map<String, String>>>();
 		 for (DnaSpeIteam dnaSpeIteam :dnaSpeIteams) {
+			 	Map<String,Map<String,String>> strMapList=new HashMap<String, Map<String,String>>();
 				Map<String,Map<String,String>> strMap=new HashMap<String, Map<String,String>>();
-				daExperimentStrs.addAll(dnaExperimentStrDao.getById( dnaSpeIteam.getSpecimen()));
-				List<DnaExperimentStr> a=dnaExperimentStrDao.getById( dnaSpeIteam.getSpecimen());
+				daExperimentStrs.addAll(dnaExperimentStrDao.getById(dnaSpeIteam.getSpecimen()));
+				List<DnaExperimentStr> a=dnaExperimentStrDao.getById(dnaSpeIteam.getSpecimen());
 				//在这里申明 带进去  不要重新生成新的map
 				strMap= genateMapFromList(a,strMapList);
 				model.addAttribute("str", strMap);
 				model.addAttribute("daExperimentStrs", daExperimentStrs);
-
 			    mapList.add(strMap);
-			 	dnaExperimentService.export(strMap, daExperimentStrs, response);
 		 }
 
 		dnaExperimentService.calculate(dnaSpeIteams,id);	
@@ -470,6 +469,7 @@ public class DnaExperimentController extends BaseController {
 		}
 		model.addAttribute("dnaPiResult", dnaPiResult);
 		model.addAttribute("pi", pi);
+		dnaExperimentService.export(mapList, daExperimentStrs, response, dnaSpeIteams);
 
 		return "modules/dna/dnaExperimentCalcuList"; 
 	}

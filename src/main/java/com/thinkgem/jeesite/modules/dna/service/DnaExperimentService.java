@@ -6,15 +6,7 @@ package com.thinkgem.jeesite.modules.dna.service;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map; 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -66,6 +58,7 @@ import jxl.Workbook;
 import jxl.write.Label;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
+import org.springframework.util.CollectionUtils;
 
 /**
  * dna试验Service
@@ -344,14 +337,17 @@ public class DnaExperimentService extends CrudService<DnaExperimentDao, DnaExper
 		
 		for (DnaSpeIteam dnaSpeIteam : dnaSpeIteams) {
 			one=dnaSpeIteam.getParrens();
-			if(one.contains("F")){
-				parentList.add(dnaSpeIteam.getSpecimen());
+			if(StringUtils.isNotEmpty(one)){
+				if(one.contains("F")){
+					parentList.add(dnaSpeIteam.getSpecimen());
+				}
+				if(one.contains("M")){
+					matherList.add(dnaSpeIteam.getSpecimen());
+				}
+				if(one.contains("C")){
+					childrenList.add(dnaSpeIteam.getSpecimen());
+				}
 			}
-			if(one.contains("M")){
-				matherList.add(dnaSpeIteam.getSpecimen());
-			}
-			if(one.contains("C")){
-				childrenList.add(dnaSpeIteam.getSpecimen());			}
 		}
 		//交叉生成结果
 		for(String parent:parentList){
@@ -459,70 +455,65 @@ public class DnaExperimentService extends CrudService<DnaExperimentDao, DnaExper
 	
 	
 	
-	public void export(	Map<String,Map<String,String>> strMap,List<DnaExperimentStr> daExperimentStrs,HttpServletResponse response) {
+	public void export(List<Map<String,Map<String,String>>> strMapList,List<DnaExperimentStr> daExperimentStrs,HttpServletResponse response,List<DnaSpeIteam> dnaSpeIteams) {
 		WritableWorkbook  book;
         try {
-        	OutputStream os = response.getOutputStream();// 取得输出流     
-        	response.reset();// 清空输出流     
-             response.setHeader("Content-disposition", "attachment; filename="  
-                     + new String(daExperimentStrs.get(0).getSpecimenCode().getBytes("GB2312"),  
-                         "iso8859_1") + ".xls");// 设定输出文件头     
-            response.setContentType("application/msexcel");// 定义输出类型   
-            book=Workbook.createWorkbook(os);
-            WritableSheet sheet = book.createSheet("受理", 0);
-            List<String> bn = new ArrayList<String>();
-            //String bn="";
-            for (String key : strMap.keySet()){
-            	for (String string : strMap.get(key).keySet()) {
-            		 //bn=string;
-					bn.add(string);
-            	}
-            }
-
-
-            String[] columns = {"基因座","案件编号-"+bn,"基因值","使用公式","pc值","pd值","n值"};
-            for (int i = 0; i < columns.length; i++) {
-            	sheet.addCell(new Label(i, 0, columns[i]));
-            }
-            sheet.setColumnView(0,20);
-            sheet.setColumnView(1,20);
-            sheet.setColumnView(2,20);
-            sheet.setColumnView(3,20);
-            sheet.setColumnView(4,20);
-            sheet.setColumnView(5,50);
-            sheet.setColumnView(6,20);
-
-//            List<String>keys=new ArrayList<String>();
-//            Map<String, String>map1=new HashMap<String, String>();
-//
-//               for (String key : strMap.keySet()) {
-//	               	keys.add(key);
-//	               	map1=strMap.get(key);
-//               }
-//               for (String key1 : keys) {
-//               	keys.add(key1);
-//               	keys.add(map1.get(key1));
-//               }
-
-
-
-
-
-         List<DnaExport>keys1=new ArrayList<DnaExport>();
-            for (String key : strMap.keySet()){
-            	DnaExport dnaExport=new DnaExport();
-            	dnaExport.setJyz(key);
-            	keys1.add(dnaExport);
-            }
-
-
-            
-            for (int i = 0; i <keys1.size(); i++) {
-            	 sheet.addCell(new Label(0, i+1,keys1.get(i).getJyz()));
+        	if(CollectionUtils.isEmpty(dnaSpeIteams))
+        	{
+				//啥也没选
+				throw new Exception("未选择任何编码数据");
 			}
 
+        	OutputStream os = response.getOutputStream();// 取得输出流     
+        	response.reset();// 清空输出流
+			response.setHeader("Content-disposition", "attachment; filename="
+					+ new String(daExperimentStrs.get(0).getSpecimenCode().getBytes("GB2312"),
+					"iso8859_1") + ".xls");// 设定输出文件头
+			response.setContentType("application/msexcel");// 定义输出类型
+			book=Workbook.createWorkbook(os);
+			WritableSheet sheet = book.createSheet("受理", 0);
+			List<String> bn = new ArrayList<String>();
+			bn.add("基因座");
+			for(DnaSpeIteam dnaItem:dnaSpeIteams){
+				bn.add("案件编号-"+dnaItem.getSpecimen());
+			}
+			bn.add("基因值");
+			bn.add("使用公式");
+			bn.add("pc值");
+			bn.add("pd值");
+			bn.add("n值");
+            String[] columns =  bn.toArray(new String[bn.size()]);
+            for (int i = 0; i < columns.length; i++) {
+            	sheet.addCell(new Label(i, 0, columns[i]));
+				sheet.setColumnView(i,20);
+            }
 
+          /*  List<String>keys=new ArrayList<String>();
+            Map<String, String>map1=new HashMap<String, String>();
+			for(Map<String,Map<String,String>> strMap: strMapList){
+					for (String key : strMap.keySet()) {
+						keys.add(key);
+						map1=strMap.get(key);
+				}
+			}
 
+			for (String key1 : keys) {
+               	keys.add(key1);
+               	keys.add(map1.get(key1));
+             }
+
+         List<DnaExport>keys1=new ArrayList<DnaExport>();
+			for(Map<String,Map<String,String>> strMap: strMapList){
+				for (String key : strMap.keySet()){
+					DnaExport dnaExport=new DnaExport();
+					dnaExport.setJyz(key);
+					keys1.add(dnaExport);
+				}
+			}
+
+            for (int i = 0; i <keys1.size(); i++) {
+            	 sheet.addCell(new Label(0, i+1,keys1.get(i).getJyz()));
+			}*/
 
             // 写入数据并关闭文件
             book.write();
@@ -537,9 +528,7 @@ public class DnaExperimentService extends CrudService<DnaExperimentDao, DnaExper
             
         } catch (Exception e) {
         	e.printStackTrace();            
-        }     		
-	
-
+        }
 }
 }
 
