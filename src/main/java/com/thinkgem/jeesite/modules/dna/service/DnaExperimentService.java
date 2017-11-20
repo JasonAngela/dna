@@ -539,6 +539,8 @@ public class DnaExperimentService extends CrudService<DnaExperimentDao, DnaExper
 
 						if(columns[i].contains("-M")){
 							//这一列显示母亲xy 后续跟上
+
+
 						}
 					}
 
