@@ -435,7 +435,7 @@ public class DnaExperimentController extends BaseController {
 	@RequestMapping(value = "calcu")
 	public String calcu(HttpServletRequest request,String id,Model model,DnaSpe dnaSpe,HttpServletResponse response){
 
-			List<DnaExperimentStr> daExperimentStrs=new ArrayList<DnaExperimentStr>();
+			/*List<DnaExperimentStr> daExperimentStrs=new ArrayList<DnaExperimentStr>();
 
 			List<DnaSpeIteam> dnaSpeIteams=new ArrayList<DnaSpeIteam>();
 			for (int i = 0; i < dnaSpe.getDnaSpeIteams().size(); i++) {
@@ -444,10 +444,9 @@ public class DnaExperimentController extends BaseController {
 				}
 			}
 
+		 List<Map<String,Map<String,String>>> mapList = new ArrayList<Map<String, Map<String, String>>>();*/
 
-
-		 List<Map<String,Map<String,String>>> mapList = new ArrayList<Map<String, Map<String, String>>>();
-		 for (DnaSpeIteam dnaSpeIteam :dnaSpeIteams) {
+		/* for (DnaSpeIteam dnaSpeIteam :dnaSpeIteams) {
 			 	Map<String,Map<String,String>> strMapList=new HashMap<String, Map<String,String>>();
 				Map<String,Map<String,String>> strMap=new HashMap<String, Map<String,String>>();
 				daExperimentStrs.addAll(dnaExperimentStrDao.getById(dnaSpeIteam.getSpecimen()));
@@ -468,8 +467,8 @@ public class DnaExperimentController extends BaseController {
 			pi*=dnaPiResultItem.get(i).getPi();
 		}
 		model.addAttribute("dnaPiResult", dnaPiResult);
-		model.addAttribute("pi", pi);
-		dnaExperimentService.export(mapList, daExperimentStrs, response, dnaSpeIteams);
+		model.addAttribute("pi", pi);*/
+		dnaExperimentService.export(response, dnaSpe);
 
 		return "modules/dna/dnaExperimentCalcuList"; 
 	}

@@ -10,6 +10,7 @@ import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
+import com.thinkgem.jeesite.modules.dna.entity.*;
 import org.activiti.engine.runtime.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,19 +32,6 @@ import com.thinkgem.jeesite.modules.dna.dao.DnaExperimentSpecimenDao;
 import com.thinkgem.jeesite.modules.dna.dao.DnaExperimentStrDao;
 import com.thinkgem.jeesite.modules.dna.dao.DnaPiResultDao;
 import com.thinkgem.jeesite.modules.dna.dao.DnaPiResultItemDao;
-import com.thinkgem.jeesite.modules.dna.entity.DnaBoard;
-import com.thinkgem.jeesite.modules.dna.entity.DnaBoardJgg;
-import com.thinkgem.jeesite.modules.dna.entity.DnaExperiment;
-import com.thinkgem.jeesite.modules.dna.entity.DnaExperimentBoard;
-import com.thinkgem.jeesite.modules.dna.entity.DnaExperimentImport;
-import com.thinkgem.jeesite.modules.dna.entity.DnaExperimentSpecimen;
-import com.thinkgem.jeesite.modules.dna.entity.DnaExperimentStr;
-import com.thinkgem.jeesite.modules.dna.entity.DnaExport;
-import com.thinkgem.jeesite.modules.dna.entity.DnaGeneFrequency;
-import com.thinkgem.jeesite.modules.dna.entity.DnaPiResult;
-import com.thinkgem.jeesite.modules.dna.entity.DnaPiResultItem;
-import com.thinkgem.jeesite.modules.dna.entity.DnaSpeIteam;
-import com.thinkgem.jeesite.modules.dna.entity.ParentageTestingEntity;
 import com.thinkgem.jeesite.modules.entrust.dao.EntrustAbstractsDao;
 import com.thinkgem.jeesite.modules.entrust.dao.EntrustRegisterDao;
 import com.thinkgem.jeesite.modules.entrust.entity.EntrustAbstracts;
@@ -455,38 +443,115 @@ public class DnaExperimentService extends CrudService<DnaExperimentDao, DnaExper
 	
 	
 	
-	public void export(List<Map<String,Map<String,String>>> strMapList,List<DnaExperimentStr> daExperimentStrs,HttpServletResponse response,List<DnaSpeIteam> dnaSpeIteams) {
+	public void export(HttpServletResponse response,DnaSpe dnaSpe) {
 		WritableWorkbook  book;
         try {
+
+			List<DnaSpeIteam> dnaSpeIteams=new ArrayList<DnaSpeIteam>();
+			for (int i = 0; i < dnaSpe.getDnaSpeIteams().size(); i++) {
+				if(dnaSpe.getDnaSpeIteams().get(i) .getSpecimen()!=null){
+					dnaSpeIteams.add(dnaSpe.getDnaSpeIteams().get(i));
+				}
+			}
+
+
         	if(CollectionUtils.isEmpty(dnaSpeIteams))
         	{
 				//啥也没选
 				throw new Exception("未选择任何编码数据");
 			}
 
+			if(dnaSpeIteams.size()>3||dnaSpeIteams.size()<=1)
+			{
+				throw new Exception("选择个数导致无法检测");
+			}
+
+
+
         	OutputStream os = response.getOutputStream();// 取得输出流     
         	response.reset();// 清空输出流
 			response.setHeader("Content-disposition", "attachment; filename="
-					+ new String(daExperimentStrs.get(0).getSpecimenCode().getBytes("GB2312"),
+					+ new String("计算结果导出".getBytes("GB2312"),
 					"iso8859_1") + ".xls");// 设定输出文件头
 			response.setContentType("application/msexcel");// 定义输出类型
 			book=Workbook.createWorkbook(os);
 			WritableSheet sheet = book.createSheet("受理", 0);
+
+			/**
+			 * 最多三个  父亲  儿子 母亲
+			 * 选择三个的话  把按照顺序 分批显示
+			 * 两个的话 就是一对显示即可
+			 * F  C  M
+			 */
+			String child="";
+			String father="";
+			String mather="";
 			List<String> bn = new ArrayList<String>();
-			bn.add("基因座");
+			bn.add("基因座");//基因座以小孩的为标准
 			for(DnaSpeIteam dnaItem:dnaSpeIteams){
 				bn.add("案件编号-"+dnaItem.getSpecimen());
+				if(!dnaItem.getSpecimen().contains("-C")){//小孩不需要添加
+					bn.add("使用公式");
+					bn.add("pc值");
+					bn.add("pd值");
+					bn.add("n值");
+				}else{
+					child = dnaItem.getSpecimen();
+				}
+
+				if(dnaItem.getSpecimen().contains("-F")){
+					father = dnaItem.getSpecimen();
+				}
+
+				if(dnaItem.getSpecimen().contains("-M")){
+					mather = dnaItem.getSpecimen();
+				}
 			}
-			bn.add("基因值");
-			bn.add("使用公式");
-			bn.add("pc值");
-			bn.add("pd值");
-			bn.add("n值");
+
+			if(StringUtils.isEmpty(child)){
+				throw new Exception("未选择小孩");
+			}
+
+			//标题
             String[] columns =  bn.toArray(new String[bn.size()]);
             for (int i = 0; i < columns.length; i++) {
             	sheet.addCell(new Label(i, 0, columns[i]));
+				// 从第二列开始就是每次的结果
+				//小孩是一定要选的
+				List<DnaExperimentStr> chlidDnaStr=dnaExperimentStrDao.getById(child);//根据小孩查询基因座个数
+
+				for(int j=0;j<chlidDnaStr.size();j++){
+					//---------------------应该是每个小孩都有21个基因座-------------------
+					if(i==0){
+						sheet.addCell(new Label(i,j+1,chlidDnaStr.get(j).getGeneLoci()));
+					}else{
+						if(columns[i].contains("-C")){
+							//这一列只显示小孩xy即可
+							sheet.addCell(new Label(i,j+1,chlidDnaStr.get(j).getX()+" "+chlidDnaStr.get(j).getY()));
+						}
+
+						if(columns[i].contains("-F")){
+							//这一列显示父亲的XY  后面列根据父亲一并显示
+							List<DnaExperimentStr> fatherDnaStr = dnaExperimentStrDao.getById(father);
+							//后续列表数据
+
+						}
+
+						if(columns[i].contains("-M")){
+							//这一列显示母亲xy 后续跟上
+						}
+					}
+
+
+				}
+
+
 				sheet.setColumnView(i,20);
             }
+
+            //添加数据进去即可
+
+
 
           /*  List<String>keys=new ArrayList<String>();
             Map<String, String>map1=new HashMap<String, String>();

@@ -22,20 +22,20 @@ import com.thinkgem.jeesite.modules.dna.dao.DnaPiResultItemDao;
  * @author zhuguli
  * @version 2017-07-04
  */
-@Service
-@Transactional(readOnly = true)
-public class DnaPiResultService extends CrudService<DnaPiResultDao, DnaPiResult> {
-  
-	@Autowired
-	private DnaPiResultItemDao dnaPiResultItemDao;
+		@Service
+		@Transactional(readOnly = true)
+		public class DnaPiResultService extends CrudService<DnaPiResultDao, DnaPiResult> {
 
-	public DnaPiResult get(String id) {
-		DnaPiResult dnaPiResult = super.get(id);
-		dnaPiResult.setDnaPiResultItemList(dnaPiResultItemDao.findList(new DnaPiResultItem(dnaPiResult)));
-		return dnaPiResult;
-	}
+			@Autowired
+			private DnaPiResultItemDao dnaPiResultItemDao;
 
-	public List<DnaPiResult> findList(DnaPiResult dnaPiResult) {
+			public DnaPiResult get(String id) {
+				DnaPiResult dnaPiResult = super.get(id);
+				dnaPiResult.setDnaPiResultItemList(dnaPiResultItemDao.findList(new DnaPiResultItem(dnaPiResult)));
+				return dnaPiResult;
+			}
+
+			public List<DnaPiResult> findList(DnaPiResult dnaPiResult) {
 		return super.findList(dnaPiResult);
 	}
 
