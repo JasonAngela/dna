@@ -18,4 +18,6 @@ import com.thinkgem.jeesite.modules.dna.entity.DnaPiResultItem;
 public interface DnaPiResultItemDao extends CrudDao<DnaPiResultItem> {
  void	delete(); 
  List<DnaPiResultItem> findAll();
+
+ List<DnaPiResultItem> getByGeneLoci(String geneLoci);
 }

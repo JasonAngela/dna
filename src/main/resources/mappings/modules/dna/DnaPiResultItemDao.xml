@@ -26,7 +26,16 @@
 		<include refid="dnaPiResultItemJoins"/>
 		WHERE a.id = #{id}
 	</select>
-	
+
+
+<select id="getByGeneLoci" resultType="DnaPiResultItem">
+	SELECT
+	<include refid="dnaPiResultItemColumns"/>
+	FROM dna_pi_result_item a
+	<include refid="dnaPiResultItemJoins"/>
+	WHERE a.gene_loci = #{geneLoci}
+</select>
+
 	<select id="findList" resultType="DnaPiResultItem">
 		SELECT 
 			<include refid="dnaPiResultItemColumns"/>

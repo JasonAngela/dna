@@ -6,11 +6,15 @@ package com.thinkgem.jeesite.modules.dna.service;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.*;
 
 import javax.servlet.http.HttpServletResponse;
 
 import com.thinkgem.jeesite.modules.dna.entity.*;
+import jxl.biff.DisplayFormat;
+import jxl.write.*;
+import jxl.write.Number;
 import org.activiti.engine.runtime.Execution;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,9 +47,6 @@ import com.thinkgem.jeesite.modules.material.entity.SpecimenMaterialRegisterItem
 import com.thinkgem.jeesite.modules.sys.service.SysCodeRuleService;
 
 import jxl.Workbook;
-import jxl.write.Label;
-import jxl.write.WritableSheet;
-import jxl.write.WritableWorkbook;
 import org.springframework.util.CollectionUtils;
 
 /**
@@ -512,15 +513,25 @@ public class DnaExperimentService extends CrudService<DnaExperimentDao, DnaExper
 				throw new Exception("未选择小孩");
 			}
 
+
+			WritableFont wf = new WritableFont(WritableFont.ARIAL, 12, WritableFont.NO_BOLD, false);
+			DisplayFormat displayFormat = NumberFormats.TEXT;
+			WritableCellFormat format = new WritableCellFormat(wf,displayFormat);
+			format.setAlignment(jxl.format.Alignment.LEFT);
+			format.setBorder(jxl.format.Border.ALL,jxl.format.BorderLineStyle.NONE);
+
+			DecimalFormat df4 = new DecimalFormat("###.###");
 			//标题
             String[] columns =  bn.toArray(new String[bn.size()]);
             for (int i = 0; i < columns.length; i++) {
+            	boolean flag = true;
             	sheet.addCell(new Label(i, 0, columns[i]));
 				// 从第二列开始就是每次的结果
 				//小孩是一定要选的
 				List<DnaExperimentStr> chlidDnaStr=dnaExperimentStrDao.getById(child);//根据小孩查询基因座个数
 
 				for(int j=0;j<chlidDnaStr.size();j++){
+					List<DnaPiResultItem> itemList = null;
 					//---------------------应该是每个小孩都有21个基因座-------------------
 					if(i==0){
 						sheet.addCell(new Label(i,j+1,chlidDnaStr.get(j).getGeneLoci()));
@@ -534,68 +545,66 @@ public class DnaExperimentService extends CrudService<DnaExperimentDao, DnaExper
 							//这一列显示父亲的XY  后面列根据父亲一并显示
 							List<DnaExperimentStr> fatherDnaStr = dnaExperimentStrDao.getById(father);
 							//后续列表数据
-
+							sheet.addCell(new Label(i,j+1,fatherDnaStr.get(j).getX()+" "+fatherDnaStr.get(j).getY()));
+							//后面跟着4列
+							//1、使用公式
+							// 2、pc值
+							//3、pd值
+							//4、n值
+							itemList =  dnaPiResultItemDao.getByGeneLoci(fatherDnaStr.get(j).getGeneLoci());
 						}
 
 						if(columns[i].contains("-M")){
 							//这一列显示母亲xy 后续跟上
+							List<DnaExperimentStr> matherDnaStr = dnaExperimentStrDao.getById(mather);
+							//后续列表数据
+							sheet.addCell(new Label(i,j+1,matherDnaStr.get(j).getX()+" "+matherDnaStr.get(j).getY()));
+							//后面跟着4列
+							//1、使用公式
+							// 2、pc值
+							//3、pd值
+							//4、n值
+							itemList =  dnaPiResultItemDao.getByGeneLoci(matherDnaStr.get(j).getGeneLoci());
+						}
 
+						if(!CollectionUtils.isEmpty(itemList)){
+							//不为空
+							sheet.addCell(new Label(i+1,j+1,itemList.get(0).getFormula()));
 
+							//-------------------------下面数据为何无效？--------------------------------------
+							sheet.addCell(new Number(i+2,j+1, itemList.get(0).getpProb() ));
+							sheet.addCell(new Number(i+3,j+1, itemList.get(0).getqProb()));
+							sheet.addCell(new Number(i+4,j+1,itemList.get(0).getMin()));
 						}
 					}
-
-
 				}
 
-
 				sheet.setColumnView(i,20);
+				/*if(flag==true){
+					break;
+				}*/
             }
 
             //添加数据进去即可
 
 
 
-          /*  List<String>keys=new ArrayList<String>();
-            Map<String, String>map1=new HashMap<String, String>();
-			for(Map<String,Map<String,String>> strMap: strMapList){
-					for (String key : strMap.keySet()) {
-						keys.add(key);
-						map1=strMap.get(key);
-				}
-			}
-
-			for (String key1 : keys) {
-               	keys.add(key1);
-               	keys.add(map1.get(key1));
-             }
-
-         List<DnaExport>keys1=new ArrayList<DnaExport>();
-			for(Map<String,Map<String,String>> strMap: strMapList){
-				for (String key : strMap.keySet()){
-					DnaExport dnaExport=new DnaExport();
-					dnaExport.setJyz(key);
-					keys1.add(dnaExport);
-				}
-			}
-
-            for (int i = 0; i <keys1.size(); i++) {
-            	 sheet.addCell(new Label(0, i+1,keys1.get(i).getJyz()));
-			}*/
-
             // 写入数据并关闭文件
             book.write();
             book.close();
-            os.flush();  
-            os.close();  
-            os=null;  
+            os.flush();
+            os.close();
+            os=null;
             response.flushBuffer();  
             PrintWriter out = response.getWriter();
             out.flush();
-            out.close(); 
+            out.close();
             
         } catch (Exception e) {
         	e.printStackTrace();            
-        }
+        }finally {
+
+		}
 }
 }
 
